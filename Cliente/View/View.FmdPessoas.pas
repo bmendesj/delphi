@@ -46,7 +46,7 @@ type
     fControllerPessoa:   TControllerPessoa;
     fControllerEndereco: TControllerEndereco;
     fRegistro:           TDTOPessoa;
-    procedure Salvar;
+    function Salvar: Boolean;
   public
     { Public declarations }
     procedure SetRegistro(aRegistro:TDTOPessoa);
@@ -73,7 +73,7 @@ begin
 
   nMsg:= Application.MessageBox(PChar('Deseja apagar o registro?'), PChar(Caption), MB_ICONQUESTION+MB_YESNO);
 
-  if nMsg <> MB_OK then
+  if nMsg <> 6 then
     Exit;
 
   fControllerEndereco.Delete;
@@ -102,7 +102,8 @@ begin
     if nMsg <> 6 then
       Exit;
 
-    Salvar;
+    if not Salvar then
+      Exit;
   end;
 
   fchPessoas:= TfchPessoas.Create(Self);
@@ -115,17 +116,20 @@ end;
 
 procedure TfmdPessoas.btnAnteriorClick(Sender: TObject);
 begin
-  fControllerEndereco.PaginaAnterior;
+  if fRegistro.Idpessoa > 0 then
+    fControllerEndereco.PaginaAnterior(fRegistro.Idpessoa);
 end;
 
 procedure TfmdPessoas.btnProximoClick(Sender: TObject);
 begin
-  fControllerEndereco.ProximaPagina;
+  if fRegistro.Idpessoa > 0 then
+    fControllerEndereco.ProximaPagina(fRegistro.Idpessoa);
 end;
 
 procedure TfmdPessoas.btnSalvarClick(Sender: TObject);
 begin
-  Salvar;
+  if not Salvar then
+    Exit;
 
   Close;
 end;
@@ -159,8 +163,10 @@ begin
   fControllerEndereco:= TControllerEndereco.Create;
 end;
 
-procedure TfmdPessoas.Salvar;
+function TfmdPessoas.Salvar: Boolean;
 begin
+  Result:= False;
+
   if fControllerEndereco.GetDataSource.DataSet.RecordCount = 0 then
   begin
     ShowMessage('Não é possível inserir uma pessoa sem endereço');
@@ -185,6 +191,8 @@ begin
     fControllerPessoa.Insert(fRegistro, fControllerEndereco.GetRegistro)
   end else
     fControllerPessoa.Update(fRegistro);
+
+  Result:= True;
 end;
 
 procedure TfmdPessoas.SetRegistro(aRegistro: TDTOPessoa);

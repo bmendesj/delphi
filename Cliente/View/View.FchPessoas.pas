@@ -83,6 +83,12 @@ begin
   if Length(edtEstado.Text) > 0 then
     Exit;
 
+  if Length(edtCep.Text) <> 8 then
+  begin
+    ShowMessage('O CEP deve conter 8 caracteres.');
+    Abort;
+  end;
+
   v:= TDAOViaCep.GetInstance;
   v.Adapter.Active:= True;
   v.Request.Method:= TRESTRequestMethod.rmGET;

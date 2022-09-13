@@ -19,6 +19,7 @@ type
     btmFechar: TSpeedButton;
     DBGrid: TDBGrid;
     btnCarregar: TSpeedButton;
+    OpenDialog1: TOpenDialog;
     procedure btnAnteriorClick(Sender: TObject);
     procedure btnProximoClick(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -44,7 +45,7 @@ implementation
 
 {$R *.dfm}
 
-uses View.Principal, View.FmdPessoas, View.FrmCarga;
+uses View.Principal, View.FmdPessoas;
 
 procedure TlstPessoas.apagarClick(Sender: TObject);
 var
@@ -76,11 +77,41 @@ begin
 end;
 
 procedure TlstPessoas.btnCarregarClick(Sender: TObject);
+var
+  sl: TStringList;
+  id: Int64;
 begin
-  frmCarga:= TfrmCarga.Create(Self);
-  frmCarga.ShowModal;
+  sl:= nil;
+  id:= 0;
 
-  fControllerPessoa.Select(0);
+  try
+    try
+      if not OpenDialog1.Execute() then
+        Exit;
+
+      sl:= TStringList.Create;
+      sl.LoadFromFile(OpenDialog1.FileName);
+
+      Screen.Cursor:= crSQLWait;
+
+      id:= fControllerPessoa.CargaEmLote(sl);
+
+      if id > 0 then
+      begin
+        ShowMessage('Lote carregado com sucesso');
+        ModalResult:= mrClose;
+
+        fControllerPessoa.Select;
+      end;
+    except on E: Exception do
+      ShowMessage(E.Message);
+    end;
+  finally
+    Screen.Cursor:= crDefault;
+
+    if sl <> nil then
+      FreeAndNil(sl);
+  end;
 end;
 
 procedure TlstPessoas.btnProximoClick(Sender: TObject);

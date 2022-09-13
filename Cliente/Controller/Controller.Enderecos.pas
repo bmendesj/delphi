@@ -47,8 +47,8 @@ type
     function Delete: Boolean; overload;
     procedure Close;
     Procedure InsertSomenteNoDataSet(aEndereco: TDTOEndereco);
-    procedure ProximaPagina;
-    procedure PaginaAnterior;
+    procedure ProximaPagina(aIdPessoa: Int64);
+    procedure PaginaAnterior(aIdPessoa: Int64);
 
     constructor Create;
   published
@@ -180,6 +180,7 @@ begin
   fDAO.Adapter.AutoUpdate:= False;
   fDAO.Request.Method:= TRESTRequestMethod.rmPOST;
   fDAO.Request.Params.Clear;
+  fDAO.Request.Body.ClearBody;
   fDAO.Request.Body.Add(aLista.ToString, ContentTypeFromString(CONTENTTYPE_APPLICATION_JSON));
   fDAO.Request.Execute;
 
@@ -272,7 +273,7 @@ begin
   fDao.Adapter.AutoUpdate:= False;
   fDao.Request.Method:= TRESTRequestMethod.rmDELETE;
   fDao.Request.Params.Clear;
-  fDao.Request.Params.AddItem('qId', fDao.DataSetidpessoa.Value.ToString, TRESTRequestParameterKind.pkQUERY);
+  fDao.Request.Params.AddItem('qId', fDao.DataSetidendereco.Value.ToString, TRESTRequestParameterKind.pkQUERY);
   fDao.Request.Execute;
 
   if fDao.Request.Response.Status.Success then
@@ -319,7 +320,7 @@ begin
   fDAO.DataSet.EmptyDataSet;
 end;
 
-procedure TControllerEndereco.PaginaAnterior;
+procedure TControllerEndereco.PaginaAnterior(aIdPessoa: Int64);
 var
   recNo: Integer;
   nTemp: Int64;
@@ -334,20 +335,21 @@ begin
 
     while not fDAO.DataSet.Eof do
     begin
-      if fDAO.DataSetidpessoa.Value < nTemp then
-        nTemp:= fDAO.DataSetidpessoa.Value;
+      if fDAO.DataSetidendereco.Value < nTemp then
+        nTemp:= fDAO.DataSetidendereco.Value;
 
       fDAO.DataSet.Next;
     end;
   finally
+    fDAO.DataSet.RecNo:= recNo;
     fDAO.DataSet.EnableControls;
   end;
 
   nTemp:= nTemp - 200;
-  Self.Select(nTemp);
+  Self.Select(aIdPessoa, nTemp);
 end;
 
-procedure TControllerEndereco.ProximaPagina;
+procedure TControllerEndereco.ProximaPagina(aIdPessoa: Int64);
 var
   recNo: Integer;
   nTemp: Int64;
@@ -368,10 +370,11 @@ begin
       fDAO.DataSet.Next;
     end;
   finally
+    fDAO.DataSet.RecNo:= recNo;
     fDAO.DataSet.EnableControls;
   end;
 
-  Self.Select(nTemp);
+  Self.Select(aIdPessoa, nTemp);
 end;
 
 end.

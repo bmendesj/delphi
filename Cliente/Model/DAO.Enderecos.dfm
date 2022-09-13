@@ -72,31 +72,37 @@ object DAOEnderecos: TDAOEnderecos
     end
     object DataSetdscep: TStringField
       DisplayLabel = 'CEP'
+      DisplayWidth = 8
       FieldName = 'dscep'
       Size = 15
     end
     object DataSetdsuf: TStringField
       DisplayLabel = 'Estado'
+      DisplayWidth = 30
       FieldName = 'dsuf'
       Size = 50
     end
     object DataSetnmcidade: TStringField
       DisplayLabel = 'Cidade'
+      DisplayWidth = 30
       FieldName = 'nmcidade'
       Size = 100
     end
     object DataSetnmbairro: TStringField
       DisplayLabel = 'Bairro'
+      DisplayWidth = 30
       FieldName = 'nmbairro'
       Size = 50
     end
     object DataSetnmlogradouro: TStringField
       DisplayLabel = 'Logradouro'
+      DisplayWidth = 30
       FieldName = 'nmlogradouro'
       Size = 100
     end
     object DataSetdscomplemento: TStringField
       DisplayLabel = 'Complemento'
+      DisplayWidth = 30
       FieldName = 'dscomplemento'
       Size = 100
     end

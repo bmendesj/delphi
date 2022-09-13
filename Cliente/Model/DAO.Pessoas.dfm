@@ -3,6 +3,7 @@ object DAOPessoas: TDAOPessoas
   Height = 217
   Width = 262
   object Adapter: TRESTResponseDataSetAdapter
+    Active = True
     Dataset = DataSet
     FieldDefs = <>
     Response = Response
@@ -10,7 +11,35 @@ object DAOPessoas: TDAOPessoas
     Top = 144
   end
   object DataSet: TFDMemTable
-    FieldDefs = <>
+    Active = True
+    FieldDefs = <
+      item
+        Name = 'idpessoa'
+        DataType = ftLargeint
+      end
+      item
+        Name = 'flnatureza'
+        DataType = ftSmallint
+      end
+      item
+        Name = 'dsdocumento'
+        DataType = ftString
+        Size = 20
+      end
+      item
+        Name = 'nmprimeiro'
+        DataType = ftString
+        Size = 100
+      end
+      item
+        Name = 'nmsegundo'
+        DataType = ftString
+        Size = 100
+      end
+      item
+        Name = 'dtregistro'
+        DataType = ftDate
+      end>
     IndexDefs = <>
     FetchOptions.AssignedValues = [evMode]
     FetchOptions.Mode = fmAll
@@ -36,11 +65,13 @@ object DAOPessoas: TDAOPessoas
     end
     object DataSetnmprimeiro: TStringField
       DisplayLabel = 'Primeiro nome'
+      DisplayWidth = 30
       FieldName = 'nmprimeiro'
       Size = 100
     end
     object DataSetnmsegundo: TStringField
       DisplayLabel = 'Segundo Nome'
+      DisplayWidth = 30
       FieldName = 'nmsegundo'
       Size = 100
     end

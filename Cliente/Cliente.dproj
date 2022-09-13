@@ -132,10 +132,6 @@
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
         <DCCReference Include="Controller\Controller.Pessoas.pas"/>
-        <DCCReference Include="View\View.FrmCarga.pas">
-            <Form>frmCarga</Form>
-            <FormType>dfm</FormType>
-        </DCCReference>
         <DCCReference Include="Controller\Controller.Enderecos.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>

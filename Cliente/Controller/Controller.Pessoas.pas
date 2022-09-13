@@ -173,6 +173,7 @@ begin
   fDAO.Adapter.AutoUpdate:= False;
   fDAO.Request.Method:= TRESTRequestMethod.rmPOST;
   fDAO.Request.Params.Clear;
+  fDAO.Request.Body.ClearBody;
   fDAO.Request.Body.Add(aLista.ToString, ContentTypeFromString(CONTENTTYPE_APPLICATION_JSON));
   fDAO.Request.Execute;
 
@@ -389,6 +390,7 @@ begin
       fDAO.DataSet.Next;
     end;
   finally
+    fDAO.DataSet.RecNo:= recNo;
     fDAO.DataSet.EnableControls;
   end;
 
@@ -417,6 +419,7 @@ begin
       fDAO.DataSet.Next;
     end;
   finally
+    fDAO.DataSet.RecNo:= recNo;
     fDAO.DataSet.EnableControls;
   end;
 
