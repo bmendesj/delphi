@@ -1,0 +1,39 @@
+unit uPrincipal;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Data.DB, Vcl.Grids,
+  Vcl.DBGrids;
+
+type
+  TfrmPrincipal = class(TForm)
+    DBGrid1: TDBGrid;
+    procedure FormCreate(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmPrincipal: TfrmPrincipal;
+
+implementation
+
+{$R *.dfm}
+
+uses DAO.Pessoas;
+
+procedure TfrmPrincipal.FormCreate(Sender: TObject);
+var
+  pesoas: TDAOPessoas;
+begin
+  pesoas:= TDAOPessoas.Create(Self);
+  pesoas.RESTRequest1.Execute;
+
+  DBGrid1.DataSource:= pesoas.dsPessoas;
+end;
+
+end.

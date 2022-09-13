@@ -1,0 +1,211 @@
+unit ServerMethodsUnit1;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, System.Json,
+  DataSnap.DSProviderDataModuleAdapter, Datasnap.DSServer, Datasnap.DSAuth,
+
+  Data.DBXPlatform, Web.HTTPApp, Datasnap.DSHTTPWebBroker,
+
+  FireDAC.Stan.Option, Data.DB;
+
+type
+  TServerMethods1 = class(TDSServerModule)
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+
+    function Pessoas(aValue: Int64): TJSONArray;         //GET
+    function UpdatePessoas: TJSONArray;                  //POST
+    function AcceptPessoas(aValue: Integer): TJSONArray; //PUT
+    function CancelPessoas(aValue: Int64): TJSONArray;   //DELETE
+  end;
+
+  testedelphi = class(TServerMethods1);
+
+implementation
+
+
+{$R *.dfm}
+
+uses uJsonDataSetHelper, WebModuleUnit1, uDAO.DMConexao, uDAO.Pessoas;
+
+
+{ TServerMethods1 }
+
+function TServerMethods1.Pessoas(aValue: Int64): TJSONArray;
+var
+  pessoas: TDAOPessoas;
+begin
+{GET NO HTTP}
+  Result:=  nil;
+  pessoas:= nil;
+
+  try
+    try
+      pessoas:=TDAOPessoas.Create(DMConexao.FDConnection1);
+
+      Result:= pessoas.GetPessoas(aValue);
+
+      //Remove partes indesejadas do datasnap
+      GetInvocationMetadata().ResponseCode:=    200;
+      GetInvocationMetadata().ResponseContent:= Result.ToString;
+    except on E: Exception do
+      begin
+        GetInvocationMetadata().ResponseCode:= 500;
+        GetInvocationMetadata().ResponseMessage:= 'Um erro inesperado ocorreu.';
+      end;
+    end;
+  finally
+    if pessoas <> nil then
+      FreeAndNil(pessoas);
+  end;
+end;
+
+function TServerMethods1.UpdatePessoas: TJSONArray;
+var
+  lModulo:       TWebModule;
+  lJARequisicao: TJSONArray;
+
+  pessoas: TDAOPessoas;
+  qInseridos: Integer;
+begin
+{POST NO HTTP}
+  Result:=  nil;
+  pessoas:= nil;
+
+  try
+    lModulo:= GetDataSnapWebModule;
+
+    if lModulo.Request.content.IsEmpty then
+    begin
+      GetInvocationMetadata().ResponseCode:= 204;
+      GetInvocationMetadata().ResponseMessage:= 'Não existe registros para inserir.';
+      Abort;
+    end;
+
+    lJARequisicao:= TJSONObject.ParseJSONValue(TEncoding.ASCII.GetBytes(lModulo.Request.Content), 0) as TJSONArray;
+
+    if lJARequisicao.Count < 1 then
+    begin
+      GetInvocationMetadata().ResponseCode:= 202;
+      GetInvocationMetadata().ResponseMessage:= 'Não existe registros para inserir.';
+      Exit;
+    end;
+
+    pessoas:= TDAOPessoas.Create(DMConexao.FDConnection1);
+
+    qInseridos:= pessoas.InsertPessoas(lJARequisicao);
+
+    Result:= TJSONArray.Create('incluidos', qInseridos.ToString);
+  except
+    on E: Exception do
+    begin
+      GetInvocationMetadata().ResponseCode:= 500;
+      GetInvocationMetadata().ResponseMessage:= 'Um erro inesperado ocorreu.';
+    end;
+  end;
+end;
+
+function TServerMethods1.AcceptPessoas(aValue: Integer): TJSONArray;
+const
+  _sql = 'UPDATE teste_delphi.pessoa ' + 
+         'SET ' +
+         '  flnatureza  = :flnatureza, ' + 
+         '  dsdocumento = :dsdocumento, ' + 
+         '  nmprimeiro  = :nmprimeiro, ' + 
+         '  nmsegundo   = :nmsegundo, ' + 
+         '  dtregistro  = :dtregistro ' + 
+         'WHERE idpessoa = :idPessoa';
+var
+  lModulo:       TWebModule;
+  lJARequisicao: TJSONArray;
+  lValores:      TJSONValue;
+begin
+{PUT NO HTTP}
+  Result:= nil;
+
+  try
+    lModulo:= GetDataSnapWebModule;
+
+    if lModulo.Request.content.IsEmpty then
+    begin
+      GetInvocationMetadata().ResponseCode:= 204;
+      GetInvocationMetadata().ResponseMessage:= 'Sem registro para alterar.';
+      Abort;
+    end;
+
+    lJARequisicao:= TJSONObject.ParseJSONValue(TEncoding.ASCII.GetBytes(lModulo.Request.Content), 0) as TJSONArray;
+
+    if lJARequisicao.Count <> 1 then
+    begin
+      GetInvocationMetadata().ResponseCode:= 202;
+      GetInvocationMetadata().ResponseMessage:= 'Quantidade de registros incorreta.';
+      Exit;
+    end;
+
+    lValores:= lJARequisicao.Items[0];
+  
+    DMConexao.fdqPessoa.SQL.Clear;
+    DMConexao.fdqPessoa.SQL.Add(_sql);
+
+    DMConexao.fdqPessoa.ParamByName('idpessoa').AsLargeInt:=   aValue;
+    DMConexao.fdqPessoa.ParamByName('flnatureza').AsSmallInt:= lValores.GetValue<SmallInt>('flnatureza');
+    DMConexao.fdqPessoa.ParamByName('dsdocumento').AsString:=  lValores.GetValue<string>('dsdocumento');
+    DMConexao.fdqPessoa.ParamByName('nmprimeiro').AsString:=   lValores.GetValue<string>('nmprimeiro');
+    DMConexao.fdqPessoa.ParamByName('nmsegundo').AsString:=    lValores.GetValue<string>('nmsegundo');
+    DMConexao.fdqPessoa.ParamByName('dtregistro').AsDate:=     StrToDate(lValores.GetValue<string>('dtregistro'));
+
+    DMConexao.fdqPessoa.ExecSQL;
+
+    DMConexao.FDConnection1.Commit;
+
+    Result:= TJSONArray.Create('message', 'Registro alterado.');
+  except
+    on E: Exception do
+    begin
+      DMConexao.FDConnection1.Rollback;
+      GetInvocationMetadata().ResponseCode:= 500;
+      GetInvocationMetadata().ResponseMessage:= 'Um erro inesperado ocorreu.';
+    end;
+  end;
+end;
+
+function TServerMethods1.CancelPessoas(aValue: Int64): TJSONArray;
+const
+  _sql = 'DELETE FROM teste_delphi.pessoa	WHERE idpessoa = :idpessoa';
+begin
+{DELETE NO HTTP}
+  Result:= nil;
+
+  try
+    if aValue < 1 then
+    begin
+      GetInvocationMetadata().ResponseCode:= 202;
+      GetInvocationMetadata().ResponseMessage:= 'A id do registro não foi informada.';
+      Exit;
+    end;
+
+    DMConexao.fdqPessoa.SQL.Clear;
+    DMConexao.fdqPessoa.SQL.Add(_sql);
+
+    DMConexao.fdqPessoa.ParamByName('idpessoa').AsLargeInt:=   aValue;
+
+    DMConexao.fdqPessoa.ExecSQL;
+
+    DMConexao.FDConnection1.Commit;
+
+    Result:= TJSONArray.Create('message', 'Registro apagado.');
+  except
+    on E: Exception do
+    begin
+      DMConexao.FDConnection1.Rollback;
+      GetInvocationMetadata().ResponseCode:= 500;
+      GetInvocationMetadata().ResponseMessage:= 'Um erro inesperado ocorreu.';
+    end;
+  end;
+end;
+
+end.

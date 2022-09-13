@@ -1,0 +1,167 @@
+unit uDAO.Pessoas;
+
+interface
+
+uses
+  System.SysUtils, System.JSON,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf,
+  FireDAC.Phys.Intf, FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async,
+  FireDAC.Phys, FireDAC.Phys.PG, FireDAC.Phys.PGDef, FireDAC.VCLUI.Wait,
+  Data.DB, FireDAC.Comp.Client, FireDAC.Stan.Param, FireDAC.DatS,
+  FireDAC.DApt.Intf, FireDAC.DApt, FireDAC.Comp.DataSet;
+
+type
+  TDAOPessoas = class
+  private
+    fConector: TFDConnection;
+  public
+    function Get(const aId: Int64 = 0): TJSONArray;
+    function Insert(aJsonArray: TJSONArray): integer;
+    function Update(const aId: Int64; aJsonArray: TJSONArray): Integer;
+    constructor Create(aConector: TFDConnection);
+    destructor Destroy; override;
+  published
+  end;
+
+implementation
+
+{ TDAOPessoas }
+
+uses uDAO.DMConexao, uJsonDataSetHelper;
+
+constructor TDAOPessoas.Create(aConector: TFDConnection);
+begin
+  fConector:= aConector;
+end;
+
+destructor TDAOPessoas.Destroy;
+begin
+
+  inherited;
+end;
+
+function TDAOPessoas.Get(const aId: Int64 = 0): TJSONArray;
+const
+  _sql = 'SELECT * FROM teste_delphi.pessoa';
+begin
+  Result:= nil;
+
+  try
+    DMConexao.fdqPessoa.SQL.Clear;
+    DMConexao.fdqPessoa.SQL.Add(_sql);
+
+    if aId > 0 then
+      DMConexao.fdqPessoa.SQL.Add('WHERE idpessoa = ' + aId.ToString);
+
+    DMConexao.fdqPessoa.Open;
+
+    Result:= DMConexao.fdqPessoa.DataSetToJSON;
+  except on E: Exception do
+    raise;
+  end;
+end;
+
+function TDAOPessoas.Insert(aJsonArray: TJSONArray): integer;
+const
+  _sql = 'INSERT INTO teste_delphi.pessoa (' +
+         '  flnatureza, ' +
+         '  dsdocumento, ' +
+         '  nmprimeiro, ' +
+         '  nmsegundo, ' +
+         '  dtregistro' +
+         ') VALUES (' +
+         '  :flnatureza, ' +
+         '  :dsdocumento, ' +
+         '  :nmprimeiro, ' +
+         '  :nmsegundo, ' +
+         '  :dtregistro' +
+         ')';
+var
+  jValores: TJSONValue;
+  idx:      Integer;
+begin
+  idx:= 0;
+
+  try
+    DMConexao.FDConnection1.StartTransaction;
+
+    DMConexao.fdqPessoa.SQL.Clear;
+    DMConexao.fdqPessoa.SQL.Add(_sql);
+    DMConexao.fdqPessoa.Params.ArraySize:= aJsonArray.Count;
+
+    for jValores in aJsonArray do
+    begin
+      DMConexao.fdqPessoa.ParamByName('flnatureza').AsSmallInts[idx]:= jValores.GetValue<SmallInt>('flnatureza');
+      DMConexao.fdqPessoa.ParamByName('dsdocumento').AsStrings[idx]:=  jValores.GetValue<string>('dsdocumento');
+      DMConexao.fdqPessoa.ParamByName('nmprimeiro').AsStrings[idx]:=   jValores.GetValue<string>('nmprimeiro');
+      DMConexao.fdqPessoa.ParamByName('nmsegundo').AsStrings[idx]:=    jValores.GetValue<string>('nmsegundo');
+      DMConexao.fdqPessoa.ParamByName('dtregistro').AsDates[idx]:=     StrToDate(jValores.GetValue<string>('dtregistro'));
+
+      Inc(idx);
+    end;
+
+    if idx > 0 then
+      DMConexao.fdqPessoa.Execute(idx);
+
+    DMConexao.FDConnection1.Commit;
+
+    Result:= idx;
+  except
+    on E: Exception do
+    begin
+      DMConexao.FDConnection1.Rollback;
+      raise;
+    end;
+  end;
+end;
+
+function TDAOPessoas.Update(const aId: Int64; aJsonArray: TJSONArray): Integer;
+const
+  _sql = 'UPDATE teste_delphi.pessoa ' +
+         'SET ' +
+         '  flnatureza  = :flnatureza, ' +
+         '  dsdocumento = :dsdocumento, ' +
+         '  nmprimeiro  = :nmprimeiro, ' +
+         '  nmsegundo   = :nmsegundo, ' +
+         '  dtregistro  = :dtregistro ' +
+         'WHERE idpessoa = :idPessoa';
+var
+  lValores: TJSONValue;
+begin
+{
+  Foi mantido o usso do jsonArray para futuramente suportar a atualização de multiplos resgistros
+  essa alteraçãos será feita com a criar de uma função concorrente (overload)
+}
+  Result:= 0;
+
+  try
+    if aJsonArray.Count <> 1 then
+      raise Exception.Create('Quantidade de registros incorreta.');
+
+    lValores:= aJsonArray.Items[0];
+
+    DMConexao.fdqPessoa.SQL.Clear;
+    DMConexao.fdqPessoa.SQL.Add(_sql);
+
+    DMConexao.fdqPessoa.ParamByName('idpessoa').AsLargeInt:=   aValue;
+    DMConexao.fdqPessoa.ParamByName('flnatureza').AsSmallInt:= lValores.GetValue<SmallInt>('flnatureza');
+    DMConexao.fdqPessoa.ParamByName('dsdocumento').AsString:=  lValores.GetValue<string>('dsdocumento');
+    DMConexao.fdqPessoa.ParamByName('nmprimeiro').AsString:=   lValores.GetValue<string>('nmprimeiro');
+    DMConexao.fdqPessoa.ParamByName('nmsegundo').AsString:=    lValores.GetValue<string>('nmsegundo');
+    DMConexao.fdqPessoa.ParamByName('dtregistro').AsDate:=     StrToDate(lValores.GetValue<string>('dtregistro'));
+
+    DMConexao.fdqPessoa.ExecSQL;
+
+    DMConexao.FDConnection1.Commit;
+
+    Result:= aJsonArray.Count;
+  except
+    on E: Exception do
+    begin
+      DMConexao.FDConnection1.Rollback;
+      raise;
+    end;
+  end;
+end;
+
+end.

@@ -1,0 +1,98 @@
+object DAOEnderecos: TDAOEnderecos
+  OldCreateOrder = False
+  Height = 217
+  Width = 262
+  object RESTResponseDataSetAdapter: TRESTResponseDataSetAdapter
+    Dataset = FDMemTable
+    FieldDefs = <>
+    Response = Response
+    Left = 64
+    Top = 144
+  end
+  object FDMemTable: TFDMemTable
+    FieldDefs = <>
+    IndexDefs = <>
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.AutoCommitUpdates = True
+    StoreDefs = True
+    Left = 200
+    Top = 8
+    object FDMemTableidendereco: TLargeintField
+      FieldName = 'idendereco'
+      Visible = False
+    end
+    object FDMemTableidpessoa: TLargeintField
+      FieldName = 'idpessoa'
+      Visible = False
+    end
+    object FDMemTabledscep: TStringField
+      DisplayLabel = 'CEP'
+      FieldName = 'dscep'
+      EditMask = '00\.000\-999;1;_'
+      Size = 15
+    end
+    object FDMemTabledsuf: TStringField
+      DisplayLabel = 'Estado'
+      FieldName = 'dsuf'
+      Size = 50
+    end
+    object FDMemTablenmcidade: TStringField
+      DisplayLabel = 'Cidade'
+      FieldName = 'nmcidade'
+      Size = 100
+    end
+    object FDMemTablenmbairro: TStringField
+      DisplayLabel = 'Bairro'
+      FieldName = 'nmbairro'
+      Size = 50
+    end
+    object FDMemTablenmlogradouro: TStringField
+      DisplayLabel = 'Logradouro'
+      FieldName = 'nmlogradouro'
+      Size = 100
+    end
+    object FDMemTabledscomplemento: TStringField
+      DisplayLabel = 'Complemento'
+      FieldName = 'dscomplemento'
+      Size = 100
+    end
+  end
+  object DataSource: TDataSource
+    DataSet = FDMemTable
+    Left = 200
+    Top = 56
+  end
+  object Client: TRESTClient
+    BaseURL = 'http://localhost:8080/wk/rest/TSMEndereco'
+    Params = <>
+    Left = 64
+  end
+  object Request: TRESTRequest
+    AssignedValues = [rvConnectTimeout, rvReadTimeout]
+    Client = Client
+    Params = <
+      item
+        Kind = pkREQUESTBODY
+        Name = 'body7DDDF5DC347441FCA4668F4AF50A7B84'
+        Value = 
+          '['#13#10'    {'#13#10'        "flnatureza": 2,'#13#10'        "dsdocumento": "2008' +
+          '",'#13#10'        "nmprimeiro": "benjamim",'#13#10'        "nmsegundo": "men' +
+          'des",'#13#10'        "dtregistro": "09/06/1979",'#13#10'        "dscep": "62' +
+          '034070"'#13#10'    }'#13#10']'
+        ContentType = ctAPPLICATION_JSON
+      end>
+    Resource = 'enderecos'
+    Response = Response
+    Left = 64
+    Top = 48
+  end
+  object Response: TRESTResponse
+    Left = 64
+    Top = 96
+  end
+end

@@ -1,0 +1,29 @@
+unit SMViaCep;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, System.Json,
+  DataSnap.DSProviderDataModuleAdapter, Datasnap.DSServer, Datasnap.DSAuth,
+
+  Data.DBXPlatform, Web.HTTPApp, Datasnap.DSHTTPWebBroker,
+
+  FireDAC.Stan.Option, Data.DB;
+
+type
+  TSMViaCep = class(TDSServerModule)
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+implementation
+
+
+{$R *.dfm}
+
+uses
+  uJsonDataSetHelper, WebModuleUnit1, DAO.DMConexao, DAO.Pessoas;
+
+end.

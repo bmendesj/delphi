@@ -1,0 +1,92 @@
+object frmPrincipal: TfrmPrincipal
+  Left = 0
+  Top = 0
+  Caption = 'Teste Delphi Cliente'
+  ClientHeight = 525
+  ClientWidth = 841
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -16
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  FormStyle = fsMDIForm
+  OldCreateOrder = False
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 19
+  object pLateral: TPanel
+    Left = 0
+    Top = 0
+    Width = 89
+    Height = 525
+    Align = alLeft
+    BevelOuter = bvNone
+    ParentBackground = False
+    TabOrder = 0
+    object btnCarregar: TSpeedButton
+      Left = 0
+      Top = 0
+      Width = 90
+      Height = 24
+      Caption = 'Carregar'
+    end
+    object btnAnterior: TSpeedButton
+      Left = 0
+      Top = 30
+      Width = 90
+      Height = 24
+      Caption = 'Anterior'
+    end
+    object btnProximo: TSpeedButton
+      Left = 0
+      Top = 60
+      Width = 90
+      Height = 24
+      Caption = 'Proximo'
+    end
+    object btnBuscar: TSpeedButton
+      Left = 0
+      Top = 90
+      Width = 90
+      Height = 24
+      Caption = 'Buscar'
+    end
+    object btnAdicionar: TSpeedButton
+      Left = 0
+      Top = 120
+      Width = 90
+      Height = 24
+      Caption = 'Adicionar'
+      OnClick = btnAdicionarClick
+    end
+    object Editar: TSpeedButton
+      Left = 0
+      Top = 150
+      Width = 90
+      Height = 24
+      Caption = 'Editar'
+    end
+    object apagar: TSpeedButton
+      Left = 0
+      Top = 180
+      Width = 90
+      Height = 24
+      Caption = 'Apagar'
+    end
+  end
+  object DBGrid1: TDBGrid
+    Left = 89
+    Top = 0
+    Width = 752
+    Height = 525
+    Align = alClient
+    ReadOnly = True
+    TabOrder = 1
+    TitleFont.Charset = DEFAULT_CHARSET
+    TitleFont.Color = clWindowText
+    TitleFont.Height = -16
+    TitleFont.Name = 'Tahoma'
+    TitleFont.Style = []
+  end
+end

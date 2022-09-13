@@ -1,0 +1,70 @@
+unit View.Principal;
+
+interface
+
+uses
+  DAO.Pessoas,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Data.DB, Vcl.Grids,
+  Vcl.DBGrids, REST.Types, Vcl.ExtCtrls, Vcl.Buttons, Vcl.Imaging.pngimage,
+  System.ImageList, Vcl.ImgList;
+
+type
+  TfrmPrincipal = class(TForm)
+    pLateral: TPanel;
+    btnCarregar: TSpeedButton;
+    btnAnterior: TSpeedButton;
+    btnProximo: TSpeedButton;
+    btnBuscar: TSpeedButton;
+    btnAdicionar: TSpeedButton;
+    Editar: TSpeedButton;
+    apagar: TSpeedButton;
+    DBGrid1: TDBGrid;
+    procedure FormCreate(Sender: TObject);
+    procedure btnAdicionarClick(Sender: TObject);
+  private
+    { Private declarations }
+    fPessoas: TDAOPessoas;
+
+    procedure OcultarPanelLateral;
+  public
+    { Public declarations }
+    procedure ExibirPanelLateral;
+  end;
+
+const
+  _LIMITPAGINACAO = 200;
+
+var
+  frmPrincipal: TfrmPrincipal;
+
+implementation
+
+{$R *.dfm}
+
+uses View.FmdPessoas;
+
+procedure TfrmPrincipal.btnAdicionarClick(Sender: TObject);
+begin
+  fmdPessoas:= TfmdPessoas.Create(Self);
+  OcultarPanelLateral;
+end;
+
+procedure TfrmPrincipal.ExibirPanelLateral;
+begin
+  pLateral.Visible:= True;
+end;
+
+procedure TfrmPrincipal.FormCreate(Sender: TObject);
+begin
+  fPessoas:= TDAOPessoas.Create(Self);
+
+  DBGrid1.DataSource:= fPessoas.DataSource;
+end;
+
+procedure TfrmPrincipal.OcultarPanelLateral;
+begin
+  pLateral.Visible:= False;
+end;
+
+end.

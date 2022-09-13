@@ -1,0 +1,585 @@
+unit SMEndereco;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, System.Json,
+  DataSnap.DSProviderDataModuleAdapter, Datasnap.DSServer, Datasnap.DSAuth,
+
+  Data.DBXPlatform, Web.HTTPApp, Datasnap.DSHTTPWebBroker,
+
+  FireDAC.Stan.Option, Data.DB;
+
+type
+  TSMEndereco = class(TDSServerModule)
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    function Pessoas(aValue: Int64): TJSONArray;         //GET
+    function UpdatePessoas: TJSONArray;                  //POST
+    function AcceptPessoas(aValue: Integer): TJSONArray; //PUT
+    function CancelPessoas(aValue: Int64): TJSONArray;   //DELETE
+
+    function Enderecos(aValue: Int64): TJSONArray;         //GET
+    function UpdateEnderecos: TJSONArray;                  //POST
+    function AcceptEnderecos(aValue: Integer): TJSONArray; //PUT
+    function CancelEnderecos(aValue: Int64): TJSONArray;   //DELETE
+
+    function EnderecoIntegracao(aValue: Int64): TJSONArray;         //GET
+    function UpdateEnderecoIntegracao: TJSONArray;                  //POST
+    function AcceptEnderecoIntegracao(aValue: Integer): TJSONArray; //PUT
+    function CancelEnderecoIntegracao(aValue: Int64): TJSONArray;   //DELETE
+  end;
+
+  testedelphi = class(SMEndereco);
+
+implementation
+
+
+{$R *.dfm}
+
+uses
+  uJsonDataSetHelper, WebModuleUnit1, DAO.DMConexao, DAO.Pessoas, DAO.Enderecos, DAO.EnderecoIntegracao;
+
+{ TServerMethods1 }
+
+
+{ > > > PESSOAS < < < }
+
+
+function TSMEndereco.Pessoas(aValue: Int64): TJSONArray;
+var
+  pessoas: TDAOPessoas;
+begin
+{GET NO HTTP}
+  Result:=  nil;
+  pessoas:= nil;
+
+  try
+    try
+      pessoas:=TDAOPessoas.Create(DMConexao.FDPostgre);
+
+      Result:= pessoas.Get(aValue);
+
+      //Remove partes indesejadas do datasnap
+      GetInvocationMetadata().ResponseCode:=    200;
+      GetInvocationMetadata().ResponseContent:= Result.ToString;
+    except on E: Exception do
+      begin
+        GetInvocationMetadata().ResponseCode:= 500;
+        GetInvocationMetadata().ResponseMessage:= 'Um erro inesperado ocorreu.';
+      end;
+    end;
+  finally
+    if pessoas <> nil then
+      FreeAndNil(pessoas);
+  end;
+end;
+
+function TSMEndereco.UpdatePessoas: TJSONArray;
+var
+  lModulo:       TWebModule;
+  lJARequisicao: TJSONArray;
+
+  pessoas:       TDAOPessoas;
+  qInseridos:    Integer;
+begin
+{POST NO HTTP}
+  Result:=  nil;
+  pessoas:= nil;
+
+  try
+    try
+      lModulo:= GetDataSnapWebModule;
+
+      if lModulo.Request.content.IsEmpty then
+      begin
+        GetInvocationMetadata().ResponseCode:= 204;
+        GetInvocationMetadata().ResponseMessage:= 'Não existe registros para inserir.';
+        Abort;
+      end;
+
+      lJARequisicao:= TJSONObject.ParseJSONValue(TEncoding.ASCII.GetBytes(lModulo.Request.Content), 0) as TJSONArray;
+
+      if lJARequisicao.Count < 1 then
+      begin
+        GetInvocationMetadata().ResponseCode:= 202;
+        GetInvocationMetadata().ResponseMessage:= 'Não existe registros para inserir.';
+        Exit;
+      end;
+
+      pessoas:= TDAOPessoas.Create(DMConexao.FDPostgre);
+
+      qInseridos:= pessoas.Insert(lJARequisicao);
+
+      Result:= TJSONArray.Create('incluidos', qInseridos.ToString);
+
+      //Remove partes indesejadas do datasnap
+      GetInvocationMetadata().ResponseCode:=    200;
+      GetInvocationMetadata().ResponseContent:= Result.ToString;
+    except
+      on E: Exception do
+      begin
+        GetInvocationMetadata().ResponseCode:= 500;
+        GetInvocationMetadata().ResponseMessage:= 'Um erro inesperado ocorreu.';
+      end;
+    end;
+  finally
+    if pessoas <> nil then
+      FreeAndNil(pessoas);
+  end;
+end;
+
+function TSMEndereco.AcceptPessoas(aValue: Integer): TJSONArray;
+var
+  lModulo:       TWebModule;
+  lJARequisicao: TJSONArray;
+
+  pessoas: TDAOPessoas;
+begin
+{PUT NO HTTP}
+  Result:=  nil;
+  pessoas:= nil;
+
+  try
+    try
+      lModulo:= GetDataSnapWebModule;
+
+      if lModulo.Request.content.IsEmpty then
+      begin
+        GetInvocationMetadata().ResponseCode:= 204;
+        GetInvocationMetadata().ResponseMessage:= 'Sem registro para alterar.';
+        Exit;
+      end;
+
+      lJARequisicao:= TJSONObject.ParseJSONValue(TEncoding.ASCII.GetBytes(lModulo.Request.Content), 0) as TJSONArray;
+
+      if lJARequisicao.Count <> 1 then
+      begin
+        GetInvocationMetadata().ResponseCode:= 202;
+        GetInvocationMetadata().ResponseMessage:= 'Dese ser informado exatamente um registro para alteração.';
+        Exit;
+      end;
+
+      pessoas:= TDAOPessoas.Create(DMConexao.FDPostgre);
+
+      pessoas.Update(aValue, lJARequisicao);
+
+      Result:= TJSONArray.Create('message', 'Registro alterado.');
+
+      //Remove partes indesejadas do datasnap
+      GetInvocationMetadata().ResponseCode:=    200;
+      GetInvocationMetadata().ResponseContent:= Result.ToString;
+    except
+      on E: Exception do
+      begin
+        GetInvocationMetadata().ResponseCode:= 500;
+        GetInvocationMetadata().ResponseMessage:= 'Um erro inesperado ocorreu.';
+      end;
+    end;
+  finally
+    if pessoas <> nil then
+      FreeAndNil(pessoas);
+  end;
+end;
+
+function TSMEndereco.CancelPessoas(aValue: Int64): TJSONArray;
+var
+  pessoas: TDAOPessoas;
+begin
+{DELETE NO HTTP}
+  Result:=  nil;
+  pessoas:= nil;
+
+  try
+    try
+      if aValue < 1 then
+      begin
+        GetInvocationMetadata().ResponseCode:= 202;
+        GetInvocationMetadata().ResponseMessage:= 'A id do registro não foi informada.';
+        Exit;
+      end;
+
+      pessoas:= TDAOPessoas.Create(DMConexao.FDPostgre);
+
+      pessoas.Delete(aValue);
+
+      Result:= TJSONArray.Create('message', 'Registro apagado.');
+
+      //Remove partes indesejadas do datasnap
+      GetInvocationMetadata().ResponseCode:=    200;
+      GetInvocationMetadata().ResponseContent:= Result.ToString;
+    except
+      on E: Exception do
+      begin
+        GetInvocationMetadata().ResponseCode:= 500;
+        GetInvocationMetadata().ResponseMessage:= 'Um erro inesperado ocorreu.';
+      end;
+    end;
+  finally
+    if pessoas <> nil then
+      FreeAndNil(pessoas);
+  end;
+end;
+
+
+{ > > > ENDERECOS < < < }
+
+
+function TSMEndereco.Enderecos(aValue: Int64): TJSONArray;
+var
+  enderecos: TDAOEnderecos;
+begin
+{GET NO HTTP}
+  Result:=  nil;
+  enderecos:= nil;
+
+  try
+    try
+      enderecos:=TDAOEnderecos.Create(DMConexao.FDPostgre);
+
+      Result:= enderecos.Get(aValue);
+
+      //Remove partes indesejadas do datasnap
+      GetInvocationMetadata().ResponseCode:=    200;
+      GetInvocationMetadata().ResponseContent:= Result.ToString;
+    except on E: Exception do
+      begin
+        GetInvocationMetadata().ResponseCode:= 500;
+        GetInvocationMetadata().ResponseMessage:= 'Um erro inesperado ocorreu.';
+      end;
+    end;
+  finally
+    if enderecos <> nil then
+      FreeAndNil(enderecos);
+  end;
+end;
+
+function TSMEndereco.UpdateEnderecos: TJSONArray;
+var
+  lModulo:       TWebModule;
+  lJARequisicao: TJSONArray;
+
+  endereco:      TDAOEnderecos;
+  qInseridos:    Integer;
+begin
+{POST NO HTTP}
+  Result:=   nil;
+  endereco:= nil;
+
+  try
+    try
+      lModulo:= GetDataSnapWebModule;
+
+      if lModulo.Request.content.IsEmpty then
+      begin
+        GetInvocationMetadata().ResponseCode:= 204;
+        GetInvocationMetadata().ResponseMessage:= 'Não existe registros para inserir.';
+        Abort;
+      end;
+
+      lJARequisicao:= TJSONObject.ParseJSONValue(TEncoding.ASCII.GetBytes(lModulo.Request.Content), 0) as TJSONArray;
+
+      if lJARequisicao.Count < 1 then
+      begin
+        GetInvocationMetadata().ResponseCode:= 202;
+        GetInvocationMetadata().ResponseMessage:= 'Não existe registros para inserir.';
+        Exit;
+      end;
+
+      endereco:= TDAOEnderecos.Create(DMConexao.FDPostgre);
+
+      qInseridos:= endereco.Insert(lJARequisicao);
+
+      Result:= TJSONArray.Create('incluidos', qInseridos.ToString);
+
+      //Remove partes indesejadas do datasnap
+      GetInvocationMetadata().ResponseCode:=    200;
+      GetInvocationMetadata().ResponseContent:= Result.ToString;
+    except
+      on E: Exception do
+      begin
+        GetInvocationMetadata().ResponseCode:= 500;
+        GetInvocationMetadata().ResponseMessage:= 'Um erro inesperado ocorreu.';
+      end;
+    end;
+  finally
+    if endereco <> nil then
+      FreeAndNil(endereco);
+  end;
+end;
+
+function TSMEndereco.AcceptEnderecos(aValue: Integer): TJSONArray;
+var
+  lModulo:       TWebModule;
+  lJARequisicao: TJSONArray;
+
+  endereco: TDAOEnderecos;
+begin
+{PUT NO HTTP}
+  Result:=  nil;
+  endereco:= nil;
+
+  try
+    try
+      lModulo:= GetDataSnapWebModule;
+
+      if lModulo.Request.content.IsEmpty then
+      begin
+        GetInvocationMetadata().ResponseCode:= 204;
+        GetInvocationMetadata().ResponseMessage:= 'Sem registro para alterar.';
+        Exit;
+      end;
+
+      lJARequisicao:= TJSONObject.ParseJSONValue(TEncoding.ASCII.GetBytes(lModulo.Request.Content), 0) as TJSONArray;
+
+      if lJARequisicao.Count <> 1 then
+      begin
+        GetInvocationMetadata().ResponseCode:= 202;
+        GetInvocationMetadata().ResponseMessage:= 'Dese ser informado exatamente um registro para alteração.';
+        Exit;
+      end;
+
+      endereco:= TDAOEnderecos.Create(DMConexao.FDPostgre);
+
+      endereco.Update(aValue, lJARequisicao);
+
+      Result:= TJSONArray.Create('message', 'Registro alterado.');
+
+      //Remove partes indesejadas do datasnap
+      GetInvocationMetadata().ResponseCode:=    200;
+      GetInvocationMetadata().ResponseContent:= Result.ToString;
+    except
+      on E: Exception do
+      begin
+        GetInvocationMetadata().ResponseCode:= 500;
+        GetInvocationMetadata().ResponseMessage:= 'Um erro inesperado ocorreu.';
+      end;
+    end;
+  finally
+    if endereco <> nil then
+      FreeAndNil(endereco);
+  end;
+end;
+
+function TSMEndereco.CancelEnderecos(aValue: Int64): TJSONArray;
+var
+  endereco: TDAOEnderecos;
+begin
+{DELETE NO HTTP}
+  Result:=  nil;
+  endereco:= nil;
+
+  try
+    try
+      if aValue < 1 then
+      begin
+        GetInvocationMetadata().ResponseCode:= 202;
+        GetInvocationMetadata().ResponseMessage:= 'A id do registro não foi informada.';
+        Exit;
+      end;
+
+      endereco:= TDAOEnderecos.Create(DMConexao.FDPostgre);
+
+      endereco.Delete(aValue);
+
+      Result:= TJSONArray.Create('message', 'Registro apagado.');
+
+      //Remove partes indesejadas do datasnap
+      GetInvocationMetadata().ResponseCode:=    200;
+      GetInvocationMetadata().ResponseContent:= Result.ToString;
+    except
+      on E: Exception do
+      begin
+        GetInvocationMetadata().ResponseCode:= 500;
+        GetInvocationMetadata().ResponseMessage:= 'Um erro inesperado ocorreu.';
+      end;
+    end;
+  finally
+    if endereco <> nil then
+      FreeAndNil(endereco);
+  end;
+end;
+
+
+
+{ > > > EnderecoIntegracao < < < }
+
+
+function TSMEndereco.EnderecoIntegracao(aValue: Int64): TJSONArray;
+var
+  enderecoIntegracao: TDAOEnderecoIntegracao;
+begin
+{GET NO HTTP}
+  Result:=  nil;
+  enderecoIntegracao:= nil;
+
+  try
+    try
+      enderecoIntegracao:= TDAOEnderecoIntegracao.Create(DMConexao.FDPostgre);
+
+      Result:= enderecoIntegracao.Get(aValue);
+
+      //Remove partes indesejadas do datasnap
+      GetInvocationMetadata().ResponseCode:=    200;
+      GetInvocationMetadata().ResponseContent:= Result.ToString;
+    except on E: Exception do
+      begin
+        GetInvocationMetadata().ResponseCode:= 500;
+        GetInvocationMetadata().ResponseMessage:= 'Um erro inesperado ocorreu.';
+      end;
+    end;
+  finally
+    if enderecoIntegracao <> nil then
+      FreeAndNil(enderecoIntegracao);
+  end;
+end;
+
+function TSMEndereco.UpdateEnderecoIntegracao: TJSONArray;
+var
+  lModulo:       TWebModule;
+  lJARequisicao: TJSONArray;
+
+  enderecoIntegracao: TDAOEnderecoIntegracao;
+  qInseridos:    Integer;
+begin
+{POST NO HTTP}
+  Result:=   nil;
+  enderecoIntegracao:= nil;
+
+  try
+    try
+      lModulo:= GetDataSnapWebModule;
+
+      if lModulo.Request.content.IsEmpty then
+      begin
+        GetInvocationMetadata().ResponseCode:= 204;
+        GetInvocationMetadata().ResponseMessage:= 'Não existe registros para inserir.';
+        Abort;
+      end;
+
+      lJARequisicao:= TJSONObject.ParseJSONValue(TEncoding.ASCII.GetBytes(lModulo.Request.Content), 0) as TJSONArray;
+
+      if lJARequisicao.Count < 1 then
+      begin
+        GetInvocationMetadata().ResponseCode:= 202;
+        GetInvocationMetadata().ResponseMessage:= 'Não existe registros para inserir.';
+        Exit;
+      end;
+
+      enderecoIntegracao:= TDAOEnderecoIntegracao.Create(DMConexao.FDPostgre);
+
+      qInseridos:= enderecoIntegracao.Insert(lJARequisicao);
+
+      Result:= TJSONArray.Create('incluidos', qInseridos.ToString);
+
+      //Remove partes indesejadas do datasnap
+      GetInvocationMetadata().ResponseCode:=    200;
+      GetInvocationMetadata().ResponseContent:= Result.ToString;
+    except
+      on E: Exception do
+      begin
+        GetInvocationMetadata().ResponseCode:= 500;
+        GetInvocationMetadata().ResponseMessage:= 'Um erro inesperado ocorreu.';
+      end;
+    end;
+  finally
+    if enderecoIntegracao <> nil then
+      FreeAndNil(enderecoIntegracao);
+  end;
+end;
+
+function TSMEndereco.AcceptEnderecoIntegracao(aValue: Integer): TJSONArray;
+var
+  lModulo:       TWebModule;
+  lJARequisicao: TJSONArray;
+
+  enderecoIntegracao: TDAOEnderecoIntegracao;
+begin
+{PUT NO HTTP}
+  Result:=  nil;
+  enderecoIntegracao:= nil;
+
+  try
+    try
+      lModulo:= GetDataSnapWebModule;
+
+      if lModulo.Request.content.IsEmpty then
+      begin
+        GetInvocationMetadata().ResponseCode:= 204;
+        GetInvocationMetadata().ResponseMessage:= 'Sem registro para alterar.';
+        Exit;
+      end;
+
+      lJARequisicao:= TJSONObject.ParseJSONValue(TEncoding.ASCII.GetBytes(lModulo.Request.Content), 0) as TJSONArray;
+
+      if lJARequisicao.Count <> 1 then
+      begin
+        GetInvocationMetadata().ResponseCode:= 202;
+        GetInvocationMetadata().ResponseMessage:= 'Dese ser informado exatamente um registro para alteração.';
+        Exit;
+      end;
+
+      enderecoIntegracao:= TDAOEnderecoIntegracao.Create(DMConexao.FDPostgre);
+
+      enderecoIntegracao.Update(aValue, lJARequisicao);
+
+      Result:= TJSONArray.Create('message', 'Registro alterado.');
+
+      //Remove partes indesejadas do datasnap
+      GetInvocationMetadata().ResponseCode:=    200;
+      GetInvocationMetadata().ResponseContent:= Result.ToString;
+    except
+      on E: Exception do
+      begin
+        GetInvocationMetadata().ResponseCode:= 500;
+        GetInvocationMetadata().ResponseMessage:= 'Um erro inesperado ocorreu.';
+      end;
+    end;
+  finally
+    if enderecoIntegracao <> nil then
+      FreeAndNil(enderecoIntegracao);
+  end;
+end;
+
+function TSMEndereco.CancelEnderecoIntegracao(aValue: Int64): TJSONArray;
+var
+  enderecoIntegracao: TDAOEnderecoIntegracao;
+begin
+{DELETE NO HTTP}
+  Result:=  nil;
+  enderecoIntegracao:= nil;
+
+  try
+    try
+      if aValue < 1 then
+      begin
+        GetInvocationMetadata().ResponseCode:= 202;
+        GetInvocationMetadata().ResponseMessage:= 'A id do registro não foi informada.';
+        Exit;
+      end;
+
+      enderecoIntegracao:= TDAOEnderecoIntegracao.Create(DMConexao.FDPostgre);
+
+      enderecoIntegracao.Delete(aValue);
+
+      Result:= TJSONArray.Create('message', 'Registro apagado.');
+
+      //Remove partes indesejadas do datasnap
+      GetInvocationMetadata().ResponseCode:=    200;
+      GetInvocationMetadata().ResponseContent:= Result.ToString;
+    except
+      on E: Exception do
+      begin
+        GetInvocationMetadata().ResponseCode:= 500;
+        GetInvocationMetadata().ResponseMessage:= 'Um erro inesperado ocorreu.';
+      end;
+    end;
+  finally
+    if enderecoIntegracao <> nil then
+      FreeAndNil(enderecoIntegracao);
+  end;
+end;
+
+end.

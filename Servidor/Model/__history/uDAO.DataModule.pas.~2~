@@ -1,0 +1,41 @@
+unit uDAO.DataModule;
+
+interface
+
+uses
+  System.SysUtils, System.Classes, FireDAC.Stan.Intf, FireDAC.Stan.Option,
+  FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf, FireDAC.Stan.Def,
+  FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.Phys.PG,
+  FireDAC.Phys.PGDef, FireDAC.VCLUI.Wait, Data.DB, FireDAC.Comp.Client,
+  FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt,
+  FireDAC.Comp.DataSet;
+
+type
+  TDataModule2 = class(TDataModule)
+    FDConnection1: TFDConnection;
+    FDPhysPgDriverLink1: TFDPhysPgDriverLink;
+    FDQuery1: TFDQuery;
+    FDQuery1idpessoa: TLargeintField;
+    FDQuery1flnatureza: TSmallintField;
+    FDQuery1dsdocumento: TWideStringField;
+    FDQuery1nmprimeiro: TWideStringField;
+    FDQuery1nmsegundo: TWideStringField;
+    FDQuery1dtregistro: TDateField;
+    FDUpdateSQL1: TFDUpdateSQL;
+    DataSource1: TDataSource;
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  DataModule2: TDataModule2;
+
+implementation
+
+{%CLASSGROUP 'Vcl.Controls.TControl'}
+
+{$R *.dfm}
+
+end.

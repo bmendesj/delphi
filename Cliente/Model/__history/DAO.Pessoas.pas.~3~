@@ -1,0 +1,21 @@
+﻿unit DAO.Pessoas;
+
+interface
+
+uses
+  FireDAC.Comp.Client, Data.DB;
+
+type
+  TDAOPessoas = class
+  private
+    fFdm: TFDMemTable;
+    ds: TDataSource;
+  public
+  published
+    property MemTable:   TFDMemTable read fFdm write fFdm;
+    property DataSource: TDataSource read
+  end;
+
+implementation
+
+end.

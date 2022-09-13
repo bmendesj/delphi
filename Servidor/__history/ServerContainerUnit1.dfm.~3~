@@ -1,0 +1,27 @@
+object ServerContainer1: TServerContainer1
+  OldCreateOrder = False
+  Height = 271
+  Width = 415
+  object DSServer1: TDSServer
+    Left = 96
+    Top = 11
+  end
+  object DSSCPessoa: TDSServerClass
+    OnGetClass = DSSCPessoaGetClass
+    Server = DSServer1
+    Left = 152
+    Top = 83
+  end
+  object DSSVEndereco: TDSServerClass
+    OnGetClass = DSSVEnderecoGetClass
+    Server = DSServer1
+    Left = 152
+    Top = 131
+  end
+  object DSSCEnderecoIntegracao: TDSServerClass
+    OnGetClass = DSSCEnderecoIntegracaoGetClass
+    Server = DSServer1
+    Left = 152
+    Top = 179
+  end
+end

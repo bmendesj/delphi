@@ -1,0 +1,43 @@
+﻿unit DAO.Pessoas;
+
+interface
+
+uses
+  System.SysUtils, System.JSON, REST.Types,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, FireDAC.Stan.Error,
+  FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf, FireDAC.Comp.DataSet,
+  FireDAC.Comp.Client, Data.DB, REST.Response.Adapter, REST.Client;
+
+type
+  TDAOPessoas = class
+  private
+    fRESTClient: TRESTClient;
+    fRESTRequest: TRESTRequest;
+    fRESTResponse: TRESTResponse;
+    fRESTResponseDataSetAdapter: TRESTResponseDataSetAdapter;
+    fFDMemTable: TFDMemTable;
+    fDs: TDataSource;
+  public
+    constructor Create;
+    destructor Destroy; override;
+  published
+    property MemTable:   TFDMemTable read fFDMemTable write fFDMemTable;
+    property DataSource: TDataSource read fds  write fDS;
+  end;
+
+implementation
+
+{ TDAOPessoas }
+
+constructor TDAOPessoas.Create;
+begin
+  fFDMemTable
+end;
+
+destructor TDAOPessoas.Destroy;
+begin
+
+  inherited;
+end;
+
+end.

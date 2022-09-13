@@ -1,0 +1,76 @@
+object frmPrincipal: TfrmPrincipal
+  Left = 0
+  Top = 0
+  Caption = 'frmPrincipal'
+  ClientHeight = 525
+  ClientWidth = 841
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -13
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 16
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 121
+    Height = 525
+    Align = alLeft
+    BevelOuter = bvNone
+    Color = clMenuHighlight
+    ParentBackground = False
+    TabOrder = 0
+    object btnPrior: TBitBtn
+      Left = 8
+      Top = 24
+      Width = 90
+      Height = 25
+      Caption = 'btnPrior'
+      TabOrder = 0
+    end
+    object btnNext: TBitBtn
+      Left = 8
+      Top = 55
+      Width = 90
+      Height = 25
+      Caption = 'btnNext'
+      TabOrder = 1
+    end
+    object btnAdd: TBitBtn
+      Left = 8
+      Top = 86
+      Width = 90
+      Height = 25
+      Caption = 'btnAdd'
+      TabOrder = 2
+    end
+    object btnEdit: TBitBtn
+      Left = 8
+      Top = 117
+      Width = 90
+      Height = 25
+      Caption = 'btnEdit'
+      TabOrder = 3
+    end
+    object btnDelete: TBitBtn
+      Left = 8
+      Top = 148
+      Width = 90
+      Height = 25
+      Caption = 'btnDelete'
+      TabOrder = 4
+    end
+    object btnCarregarArquivo: TBitBtn
+      Left = 8
+      Top = 179
+      Width = 90
+      Height = 25
+      Caption = 'btnCarregarArquivo'
+      TabOrder = 5
+    end
+  end
+end

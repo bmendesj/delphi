@@ -1,0 +1,19 @@
+program Cliente;
+
+uses
+  Vcl.Forms,
+  View.Principal in 'View\View.Principal.pas' {frmPrincipal},
+  DAO.Pessoas in 'Model\DAO.Pessoas.pas' {DAOPessoas: TDataModule},
+  View.FmdPessoas in 'View\View.FmdPessoas.pas' {fmdPessoas},
+  View.LstPessoas in 'View\View.LstPessoas.pas' {lstPessoas},
+  View.FchPessoas in 'View\View.FchPessoas.pas' {fchPessoas};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TfrmPrincipal, frmPrincipal);
+  Application.CreateForm(TfchPessoas, fchPessoas);
+  Application.Run;
+end.
