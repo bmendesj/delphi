@@ -23,4 +23,4 @@ aplicação de emprego real.
 Cliente feito em CVL para consumir os serviços implementados no servidor REST
 
 
-[^1]George Patton
+[^1]: George Patton
