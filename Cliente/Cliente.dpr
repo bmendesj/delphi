@@ -10,7 +10,8 @@ uses
   DAO.Enderecos in 'Model\DAO.Enderecos.pas' {DAOEnderecos: TDataModule},
   DAO.ViaCep in 'Model\DAO.ViaCep.pas' {DAOViaCep: TDataModule},
   Controller.Pessoas in 'Controller\Controller.Pessoas.pas',
-  Controller.Enderecos in 'Controller\Controller.Enderecos.pas';
+  Controller.Enderecos in 'Controller\Controller.Enderecos.pas',
+  Controller.ViaCep in 'Controller\Controller.ViaCep.pas';
 
 {$R *.res}
 

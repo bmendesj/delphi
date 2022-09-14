@@ -133,6 +133,7 @@
         </DCCReference>
         <DCCReference Include="Controller\Controller.Pessoas.pas"/>
         <DCCReference Include="Controller\Controller.Enderecos.pas"/>
+        <DCCReference Include="Controller\Controller.ViaCep.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

@@ -3,7 +3,7 @@ unit View.FchPessoas;
 interface
 
 uses
-  Controller.Enderecos,
+  Controller.Enderecos, Controller.ViaCep,
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Buttons, Vcl.ExtCtrls, Vcl.StdCtrls,
   Vcl.Mask, REST.Types, Data.DB;
@@ -35,6 +35,8 @@ type
   private
     { Private declarations }
     fControllerEndereco: TControllerEndereco;
+    fControllerViaCep:   TControllerViaCep;
+
     fRegistro:           TDTOEndereco;
   public
     { Public declarations }
@@ -47,8 +49,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses DAO.ViaCep;
 
 procedure TfchPessoas.btmFecharClick(Sender: TObject);
 begin
@@ -78,7 +78,7 @@ end;
 
 procedure TfchPessoas.edtCepExit(Sender: TObject);
 var
-  v: TDAOViaCep;
+  viaCep: TDTOViaCep;
 begin
   if Length(edtEstado.Text) > 0 then
     Exit;
@@ -89,22 +89,16 @@ begin
     Abort;
   end;
 
-  v:= TDAOViaCep.GetInstance;
-  v.Adapter.Active:= True;
-  v.Request.Method:= TRESTRequestMethod.rmGET;
-  v.Request.Params.Clear;
-  v.Request.Params.AddItem('qCep', edtCep.Text, TRESTRequestParameterKind.pkQUERY);
-  v.Request.Execute;
+  viaCep:= fControllerViaCep.GetDados(edtCep.Text);
 
-  if v.Request.Response.Status.Success then
+  if (viaCep <> nil) and (viaCep.Cep.Length > 0) then
   begin
-    edtEstado.Text:=      v.DataSetuf.AsString;
-    edtCidade.Text:=      v.DataSetlocalidade.AsString;
-    edtBairro.Text:=      v.DataSetbairro.AsString;
-    edtLogradouro.Text:=  v.DataSetlogradouro.AsString;
-    edtComplemento.Text:= v.DataSetcomplemento.AsString;
-  end else
-    ShowMessage(v.Request.Response.StatusText);
+    edtEstado.Text:=      viaCep.Uf;
+    edtCidade.Text:=      viaCep.Localidade;
+    edtBairro.Text:=      viaCep.Bairro;
+    edtLogradouro.Text:=  viaCep.Logradouro;
+    edtComplemento.Text:= viaCep.Complemento;
+  end;
 end;
 
 procedure TfchPessoas.edtCepKeyPress(Sender: TObject; var Key: Char);
@@ -129,6 +123,7 @@ end;
 procedure TfchPessoas.FormCreate(Sender: TObject);
 begin
   fControllerEndereco:= TControllerEndereco.Create;
+  fControllerViaCep:=   TControllerViaCep.Create;
 end;
 
 procedure TfchPessoas.SetRegistro(aRegistro: TDTOEndereco);
