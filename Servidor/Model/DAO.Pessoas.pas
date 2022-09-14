@@ -29,7 +29,7 @@ implementation
 
 { TDAOPessoas }
 
-uses DAO.DMConexao, uJsonDataSetHelper;
+uses uJsonDataSetHelper;
 
 constructor TDAOPessoas.Create(aConector: TFDConnection);
 begin
@@ -45,33 +45,42 @@ end;
 function TDAOPessoas.Get(const aFiltro: TPair<string, string>; aIdPaginacao: Int64 = -1): TJSONArray;
 const
   _sql = 'SELECT * FROM teste_delphi.pessoa';
+var
+  fdqPessoa: TFDQuery;
 begin
-  Result:= nil;
+  Result:=    nil;
+  fdqPessoa:= nil;
 
   try
-    DMConexao.fdqPessoa.SQL.Clear;
-    DMConexao.fdqPessoa.SQL.Add(_sql);
+    try
+      fdqPessoa:= TFDQuery.Create(nil);
+      fdqPessoa.Connection:= fConector;
+      fdqPessoa.SQL.Add(_sql);
 
-    if (aFiltro.Key.Length > 0) or (aIdPaginacao > -1) then
-      DMConexao.fdqPessoa.SQL.Add('WHERE');
+      if (aFiltro.Key.Length > 0) or (aIdPaginacao > -1) then
+        fdqPessoa.SQL.Add('WHERE');
 
-    if aFiltro.Key.Length  > 0 then
-      DMConexao.fdqPessoa.SQL.Add('  ' + aFiltro.Key + ' = ' + aFiltro.Value)
-    else
-      if aIdPaginacao > -1 then
-        DMConexao.fdqPessoa.SQL.Add('  idpessoa >= ' + aIdPaginacao.ToString);
+      if aFiltro.Key.Length  > 0 then
+        fdqPessoa.SQL.Add('  ' + aFiltro.Key + ' = ' + aFiltro.Value)
+      else
+        if aIdPaginacao > -1 then
+          fdqPessoa.SQL.Add('  idpessoa >= ' + aIdPaginacao.ToString);
 
 
-    DMConexao.fdqPessoa.SQL.Add('ORDER BY idpessoa');
+      fdqPessoa.SQL.Add('ORDER BY idpessoa');
 
-    if (aFiltro.Key.Length = 0) and (aIdPaginacao > -1) then
-      DMConexao.fdqPessoa.SQL.Add('LIMIT ' + _LIMIT.ToString);
+      if (aFiltro.Key.Length = 0) and (aIdPaginacao > -1) then
+        fdqPessoa.SQL.Add('LIMIT 200');
 
-    DMConexao.fdqPessoa.Open;
+      fdqPessoa.Open;
 
-    Result:= DMConexao.fdqPessoa.ToJsonArray;
-  except on E: Exception do
-    raise;
+      Result:= fdqPessoa.ToJsonArray;
+    except on E: Exception do
+      raise;
+    end;
+  finally
+    if fdqPessoa <> nil then
+      FreeAndNil(fdqPessoa);
   end;
 end;
 
@@ -91,51 +100,60 @@ const
          '  :dscomplemento' +
          ')';
 var
+  fdqPessoa: TFDQuery;
   jValores: TJSONValue;
   idx:      Integer;
 begin
   idx:= 0;
 
+  fdqPessoa:= nil;
+
   try
-    fConector.StartTransaction;
+    try
+      fdqPessoa:= TFDQuery.Create(nil);
+      fdqPessoa.SQL.Clear;
+      fdqPessoa.SQL.Add(_sql);
+      fdqPessoa.Params.ArraySize:= aJsonArray.Count;
 
-    DMConexao.fdqPessoa.SQL.Clear;
-    DMConexao.fdqPessoa.SQL.Add(_sql);
-    DMConexao.fdqPessoa.Params.ArraySize:= aJsonArray.Count;
+      fConector.StartTransaction;
 
-    for jValores in aJsonArray do
-    begin
-      DMConexao.fdqPessoa.ParamByName('flnatureza').AsSmallInts[idx]:=  jValores.GetValue<SmallInt>('flnatureza');
-      DMConexao.fdqPessoa.ParamByName('dsdocumento').AsStrings[idx]:=   jValores.GetValue<string>('dsdocumento');
-      DMConexao.fdqPessoa.ParamByName('nmprimeiro').AsStrings[idx]:=    jValores.GetValue<string>('nmprimeiro');
-      DMConexao.fdqPessoa.ParamByName('nmsegundo').AsStrings[idx]:=     jValores.GetValue<string>('nmsegundo');
-      DMConexao.fdqPessoa.ParamByName('dtregistro').AsDates[idx]:=      StrToDate(jValores.GetValue<string>('dtregistro'));
-      DMConexao.fdqPessoa.ParamByName('dscep').AsStrings[idx]:=         jValores.GetValue<string>('dscep');
-      DMConexao.fdqPessoa.ParamByName('dsuf').AsStrings[idx]:=          jValores.GetValue<string>('dsuf');
-      DMConexao.fdqPessoa.ParamByName('nmcidade').AsStrings[idx]:=      jValores.GetValue<string>('nmcidade');
-      DMConexao.fdqPessoa.ParamByName('nmbairro').AsStrings[idx]:=      jValores.GetValue<string>('nmbairro');
-      DMConexao.fdqPessoa.ParamByName('nmlogradouro').AsStrings[idx]:=  jValores.GetValue<string>('nmlogradouro');
-      DMConexao.fdqPessoa.ParamByName('dscomplemento').AsStrings[idx]:= jValores.GetValue<string>('dscomplemento');
+      for jValores in aJsonArray do
+      begin
+        fdqPessoa.ParamByName('flnatureza').AsSmallInts[idx]:=  jValores.GetValue<SmallInt>('flnatureza');
+        fdqPessoa.ParamByName('dsdocumento').AsStrings[idx]:=   jValores.GetValue<string>('dsdocumento');
+        fdqPessoa.ParamByName('nmprimeiro').AsStrings[idx]:=    jValores.GetValue<string>('nmprimeiro');
+        fdqPessoa.ParamByName('nmsegundo').AsStrings[idx]:=     jValores.GetValue<string>('nmsegundo');
+        fdqPessoa.ParamByName('dtregistro').AsDates[idx]:=      StrToDate(jValores.GetValue<string>('dtregistro'));
+        fdqPessoa.ParamByName('dscep').AsStrings[idx]:=         jValores.GetValue<string>('dscep');
+        fdqPessoa.ParamByName('dsuf').AsStrings[idx]:=          jValores.GetValue<string>('dsuf');
+        fdqPessoa.ParamByName('nmcidade').AsStrings[idx]:=      jValores.GetValue<string>('nmcidade');
+        fdqPessoa.ParamByName('nmbairro').AsStrings[idx]:=      jValores.GetValue<string>('nmbairro');
+        fdqPessoa.ParamByName('nmlogradouro').AsStrings[idx]:=  jValores.GetValue<string>('nmlogradouro');
+        fdqPessoa.ParamByName('dscomplemento').AsStrings[idx]:= jValores.GetValue<string>('dscomplemento');
 
-      Inc(idx);
+        Inc(idx);
+      end;
+
+      if idx > 0 then
+        fdqPessoa.Execute(idx);
+
+      fdqPessoa.SQL.Clear;
+      fdqPessoa.SQL.Add('SELECT currval(pg_get_serial_sequence('+ QuotedStr('teste_delphi.pessoa') + ',' + QuotedStr('idpessoa') + ')) AS idpessoa');
+      fdqPessoa.Open;
+
+      Result:= fdqPessoa.FieldByName('idpessoa').AsLargeInt;
+
+      fConector.Commit;
+    except
+      on E: Exception do
+      begin
+        fConector.Rollback;
+        raise;
+      end;
     end;
-
-    if idx > 0 then
-      DMConexao.fdqPessoa.Execute(idx);
-
-    DMConexao.fdqPessoa.SQL.Clear;
-    DMConexao.fdqPessoa.SQL.Add('SELECT currval(pg_get_serial_sequence('+ QuotedStr('teste_delphi.pessoa') + ',' + QuotedStr('idpessoa') + ')) AS idpessoa');
-    DMConexao.fdqPessoa.Open;
-
-    Result:= DMConexao.fdqPessoa.FieldByName('idpessoa').AsLargeInt;
-
-    fConector.Commit;
-  except
-    on E: Exception do
-    begin
-      fConector.Rollback;
-      raise;
-    end;
+  finally
+    if fdqPessoa <> nil then
+      FreeAndNil(fdqPessoa);
   end;
 end;
 
@@ -150,7 +168,8 @@ const
          '  dtregistro  = :dtregistro ' +
          'WHERE idpessoa = :idPessoa';
 var
-  lValores: TJSONValue;
+  fdqPessoa: TFDQuery;
+  lValores:  TJSONValue;
 begin
 {
   Foi mantido o usso do jsonArray para futuramente suportar a atualização de multiplos resgistros
@@ -158,54 +177,67 @@ begin
 }
   Result:= 0;
 
+  fdqPessoa:= nil;
+
   try
-    lValores:= aJsonArray.Items[0];
+    try
+      lValores:= aJsonArray.Items[0];
 
-    fConector.StartTransaction;
+      fdqPessoa:= TFDQuery.Create(nil);
+      fdqPessoa.Connection:= fConector;
+      fdqPessoa.SQL.Add(_sql);
 
-    DMConexao.fdqPessoa.SQL.Clear;
-    DMConexao.fdqPessoa.SQL.Add(_sql);
+      fConector.StartTransaction;
 
-    DMConexao.fdqPessoa.ParamByName('idpessoa').AsLargeInt:=   aId;
-    DMConexao.fdqPessoa.ParamByName('flnatureza').AsSmallInt:= lValores.GetValue<SmallInt>('flnatureza');
-    DMConexao.fdqPessoa.ParamByName('dsdocumento').AsString:=  lValores.GetValue<string>('dsdocumento');
-    DMConexao.fdqPessoa.ParamByName('nmprimeiro').AsString:=   lValores.GetValue<string>('nmprimeiro');
-    DMConexao.fdqPessoa.ParamByName('nmsegundo').AsString:=    lValores.GetValue<string>('nmsegundo');
-    DMConexao.fdqPessoa.ParamByName('dtregistro').AsDate:=     StrToDate(lValores.GetValue<string>('dtregistro'));
+      fdqPessoa.ParamByName('idpessoa').AsLargeInt:=   aId;
+      fdqPessoa.ParamByName('flnatureza').AsSmallInt:= lValores.GetValue<SmallInt>('flnatureza');
+      fdqPessoa.ParamByName('dsdocumento').AsString:=  lValores.GetValue<string>('dsdocumento');
+      fdqPessoa.ParamByName('nmprimeiro').AsString:=   lValores.GetValue<string>('nmprimeiro');
+      fdqPessoa.ParamByName('nmsegundo').AsString:=    lValores.GetValue<string>('nmsegundo');
+      fdqPessoa.ParamByName('dtregistro').AsDate:=     StrToDate(lValores.GetValue<string>('dtregistro'));
 
-    DMConexao.fdqPessoa.ExecSQL;
+      fdqPessoa.ExecSQL;
 
-    fConector.Commit;
+      fConector.Commit;
 
-    Result:= aJsonArray.Count;
-  except
-    on E: Exception do
-    begin
-      fConector.Rollback;
-      raise;
+      Result:= aJsonArray.Count;
+    except
+      on E: Exception do
+      begin
+        fConector.Rollback;
+        raise;
+      end;
     end;
+  finally
+    if fdqPessoa <> nil then
+      FreeAndNil(fdqPessoa);
   end;
 end;  
 
 function TDAOPessoas.Delete(const aId: Int64): Integer;
 const
   _sql = 'DELETE FROM teste_delphi.pessoa	WHERE idpessoa = :idpessoa';
+var
+  fdqPessoa: TFDQuery;
 begin
 {
-  O retorno foi mantido como inteiro para que futuramente a função possa ser 
+  O retorno foi mantido como inteiro para que futuramente a função possa ser
   alterada para suportar a deleção de multiplos registros
 }
   Result:= 0;
 
+  fdqPessoa:= nil;
+
   try
-    fConector.StartTransaction;
     
-    DMConexao.fdqPessoa.SQL.Clear;
-    DMConexao.fdqPessoa.SQL.Add(_sql);
+    fdqPessoa:= TFDQuery.Create(nil);
+    fdqPessoa.Connection:= fConector;
+    fdqPessoa.SQL.Add(_sql);
+    fConector.StartTransaction;
 
-    DMConexao.fdqPessoa.ParamByName('idpessoa').AsLargeInt:=   aId;
+    fdqPessoa.ParamByName('idpessoa').AsLargeInt:=   aId;
 
-    DMConexao.fdqPessoa.ExecSQL;
+    fdqPessoa.ExecSQL;
 
     fConector.Commit;
 
