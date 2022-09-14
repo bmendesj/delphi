@@ -12,12 +12,6 @@ validação de conhecimentos de CRUD ela não possui arquivo de configuração,
 criptografia ou sistema de autenticação, itens esses indispensáveis em uma 
 aplicação de emprego real.
 
-###Rotas
-
-  - http://localhost:8080/wk/rest/TSMPessoa/pessoas
-  - http://localhost:8080/wk/rest/TSMEndereco/enderecos
-  - http://localhost:8080/wk/rest/TSMViaCep/consultacep
-
 ## Cliente
 
 Cliente feito em CVL para consumir os serviços implementados no servidor REST
