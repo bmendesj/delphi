@@ -1,6 +1,6 @@
 # Teste Delphi
 
-Conjunto de aplicações client/Servidor com Datasnap para analise
+Conjunto de aplicações client/Servidor com Datasnap para analise. "Feito é melhor que perfeito"[^1].
 
 ## Servidor
 
@@ -21,3 +21,6 @@ aplicação de emprego real.
 ## Cliente
 
 Cliente feito em CVL para consumir os serviços implementados no servidor REST
+
+
+[^1]George Patton
