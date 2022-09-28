@@ -110,10 +110,4 @@ object lstPessoas: TlstPessoas
     TitleFont.Name = 'Tahoma'
     TitleFont.Style = []
   end
-  object OpenDialog1: TOpenDialog
-    Filter = 'txt|*.txt'
-    Title = 'Lista de insers'#227'o'
-    Left = 152
-    Top = 39
-  end
 end

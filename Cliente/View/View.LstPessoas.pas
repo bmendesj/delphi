@@ -4,9 +4,10 @@ interface
 
 uses
   Controller.Pessoas, Controller.Enderecos,
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Buttons, Vcl.ExtCtrls, Data.DB,
-  Vcl.Grids, Vcl.DBGrids, REST.Types, Vcl.StdCtrls;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  Vcl.Buttons, Vcl.ExtCtrls, Data.DB, Vcl.Grids, Vcl.DBGrids, REST.Types,
+  Vcl.StdCtrls;
 
 type
   TlstPessoas = class(TForm)
@@ -19,7 +20,6 @@ type
     btmFechar: TSpeedButton;
     DBGrid: TDBGrid;
     btnCarregar: TSpeedButton;
-    OpenDialog1: TOpenDialog;
     procedure btnAnteriorClick(Sender: TObject);
     procedure btnProximoClick(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -78,19 +78,25 @@ end;
 
 procedure TlstPessoas.btnCarregarClick(Sender: TObject);
 var
+  od: TOpenDialog;
   sl: TStringList;
   id: Int64;
 begin
+  od:= nil;
   sl:= nil;
   id:= 0;
 
   try
     try
-      if not OpenDialog1.Execute() then
+      od:= TOpenDialog.Create(Self);
+      od.Title:=  'Lista para insersão SINCRONA';
+      od.Filter:= 'txt|*.txt';
+
+      if not od.Execute() then
         Exit;
 
       sl:= TStringList.Create;
-      sl.LoadFromFile(OpenDialog1.FileName);
+      sl.LoadFromFile(od.FileName);
 
       Screen.Cursor:= crSQLWait;
 
@@ -109,7 +115,10 @@ begin
   finally
     Screen.Cursor:= crDefault;
 
-    if sl <> nil then
+    if od <> nil then
+      FreeAndNil(sl);
+
+    if od <> nil then
       FreeAndNil(sl);
   end;
 end;
