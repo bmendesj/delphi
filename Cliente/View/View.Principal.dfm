@@ -31,5 +31,13 @@ object frmPrincipal: TfrmPrincipal
       Caption = 'Pessoas'
       OnClick = btmPessoasClick
     end
+    object btnCarregar: TSpeedButton
+      Left = 0
+      Top = 38
+      Width = 90
+      Height = 26
+      Caption = 'Ins. Lote'
+      OnClick = btnCarregarClick
+    end
   end
 end
