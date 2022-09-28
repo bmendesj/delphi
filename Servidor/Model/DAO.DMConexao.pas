@@ -14,8 +14,6 @@ type
   TDMConexao = class(TDataModule)
     FDPostgre: TFDConnection;
     FDPhysPgDriverLink1: TFDPhysPgDriverLink;
-    fdqPessoa: TFDQuery;
-    fdqEndereco: TFDQuery;
   private const
     { Private declarations }
   public
