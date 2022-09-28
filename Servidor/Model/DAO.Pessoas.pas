@@ -111,6 +111,7 @@ begin
   try
     try
       fdqPessoa:= TFDQuery.Create(nil);
+      fdqPessoa.Connection:= fConector;
       fdqPessoa.SQL.Clear;
       fdqPessoa.SQL.Add(_sql);
       fdqPessoa.Params.ArraySize:= aJsonArray.Count;

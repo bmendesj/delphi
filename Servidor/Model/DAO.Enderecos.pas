@@ -243,6 +243,7 @@ begin
   try
     try
       fdqEndereco:= TFDQuery.Create(nil);
+      fdqEndereco.Connection:= fConector;
       fdqEndereco.SQL.Add(_sql);
 
       fConector.StartTransaction;
