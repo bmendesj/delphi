@@ -4,9 +4,10 @@ interface
 
 uses
   Controller.Enderecos, Controller.ViaCep, DTO.Endereco, DTO.ViaCep,
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Buttons, Vcl.ExtCtrls, Vcl.StdCtrls,
-  Vcl.Mask, REST.Types, Data.DB;
+  uReturnCustom,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics,   Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  Vcl.Buttons, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Mask, REST.Types, Data.DB;
 
 type
   TfchPessoas = class(TForm)
@@ -56,6 +57,8 @@ begin
 end;
 
 procedure TfchPessoas.btnSalvarClick(Sender: TObject);
+var
+  bRet: TReturnBoolean;
 begin
   fRegistro.Cep:=         edtCep.Text;
   fRegistro.Uf:=          edtEstado.Text;
@@ -63,6 +66,14 @@ begin
   fRegistro.Bairro:=      edtBairro.Text;
   fRegistro.Logradouro:=  edtLogradouro.Text;
   fRegistro.Complemento:= edtComplemento.Text;
+
+  bRet:= fControllerEndereco.Validar(fRegistro);
+
+  if bRet.HasError then
+  begin
+    ShowMessage(bRet.Mensage);
+    Exit;
+  end;
 
   if fRegistro.IdPessoa > 0 then
   begin

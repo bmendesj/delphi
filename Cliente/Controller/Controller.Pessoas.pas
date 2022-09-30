@@ -3,7 +3,7 @@ unit Controller.Pessoas;
 interface
 
 uses
-  DAO.Pessoas, Controller.Enderecos, DTO.Pessoa, DTO.Endereco,
+  DAO.Pessoas, Controller.Enderecos, DTO.Pessoa, DTO.Endereco, uReturnCustom,
   System.Classes, System.SysUtils, System.JSON.Writers, System.JSON.Types,
   System.JSON, Data.DB, REST.Types, FireDAC.Comp.Client;
 
@@ -23,6 +23,7 @@ type
     function Update(aPessoa: TDTOPessoa): Boolean; overload;
     function Delete: Boolean; overload;
     function CargaEmLote(const aLista: TStringList): InT64;
+    function Validar(aPessoa: TDTOPessoa): TReturnBoolean;
     procedure Close;
     Procedure InsertSomenteNoDataSet(aPessoa: TDTOPessoa);
     procedure ProximaPagina;
@@ -203,6 +204,56 @@ begin
     if jsonTextWriter <> nil then
       FreeAndNil(jsonTextWriter);
   end;
+end;
+
+function TControllerPessoa.Validar(aPessoa: TDTOPessoa): TReturnBoolean;
+begin
+  Result.Clear;
+
+  if aPessoa.Natureza < 1 then
+  begin
+    Result.Mensage:= 'Selecione uma Naureza.';
+    Exit;
+  end;
+
+  if aPessoa.Documento.Length = 0 then
+  begin
+    Result.Mensage:= 'Informe um documento.';
+    Exit;
+  end;
+
+  if aPessoa.Documento.Length > 20 then
+  begin
+    Result.Mensage:= 'O documento deve conter no máximo 20 caracteres.';
+    Exit;
+  end;
+
+  if aPessoa.Primeiro.Length = 0 then
+  begin
+    Result.Mensage:= 'Informe o Nome.';
+    Exit;
+  end;
+
+  if aPessoa.Primeiro.Length > 100 then
+  begin
+    Result.Mensage:= 'O Nome deve conter no máximo 100 caracteres.';
+    Exit;
+  end;
+
+  if aPessoa.Segundo.Length = 0 then
+  begin
+    Result.Mensage:= 'Informe o Sobreome.';
+    Exit;
+  end;
+
+  if aPessoa.Segundo.Length > 100 then
+  begin
+    Result.Mensage:= 'O Sobrenome deve conter no máximo 100 caracteres.';
+    Exit;
+  end;
+
+  Result.HasError:= False;
+  Result.Value:=    True;
 end;
 
 function TControllerPessoa.Update(aID: Int64; aLista: TJSonArray): Boolean;

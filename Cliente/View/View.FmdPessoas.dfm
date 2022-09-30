@@ -69,7 +69,7 @@ object fmdPessoas: TfmdPessoas
     end
     object apagar: TSpeedButton
       Left = 329
-      Top = 6
+      Top = 5
       Width = 90
       Height = 26
       Anchors = [akTop, akRight]

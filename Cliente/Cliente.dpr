@@ -16,7 +16,8 @@ uses
   DTO.Endereco in '..\Repositorio\DTOs\DTO.Endereco.pas',
   DTO.Pessoa in '..\Repositorio\DTOs\DTO.Pessoa.pas',
   DAO.AtualizaCepEmLote in 'Model\DAO.AtualizaCepEmLote.pas' {DAOAtualizaCepEmLote: TDataModule},
-  Controller.AtualizaCepEmLote in 'Controller\Controller.AtualizaCepEmLote.pas';
+  Controller.AtualizaCepEmLote in 'Controller\Controller.AtualizaCepEmLote.pas',
+  uReturnCustom in '..\Repositorio\uReturnCustom.pas';
 
 {$R *.res}
 

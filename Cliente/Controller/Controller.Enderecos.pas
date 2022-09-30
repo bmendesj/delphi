@@ -3,7 +3,7 @@ unit Controller.Enderecos;
 interface
 
 uses
-  DAO.Enderecos, DTO.Endereco,
+  DAO.Enderecos, DTO.Endereco, uReturnCustom,
   System.Classes, System.SysUtils, System.JSON.Writers, System.JSON.Types,
   System.JSON, Data.DB, REST.Types, FireDAC.Comp.Client;
 
@@ -12,16 +12,17 @@ type
   private
     fDAO:         TDAOEnderecos;
     fIdPaginacao: Int64;
-    function Insert(aLista: TJSonArray): Int64; overload;
+    function Insert(aLista: TJSonArray): Int64;              overload;
     function Update(aID:Int64; aLista: TJSonArray): Boolean; overload;
-    function Delete(aID:Int64): Boolean; overload;
+    function Delete(aID:Int64): Boolean;                     overload;
   public
     function GetDataSource: TDataSource;
     function GetRegistro: TDTOEndereco;
     function Select(aIdPessoa: Int64; aIdPaginacao: Int64 = 0): Boolean;
-    function Insert(aEndereco: TDTOEndereco): Int64; overload;
-    function Update(aEndereco: TDTOEndereco): Boolean; overload;
-    function Delete: Boolean; overload;
+    function Insert(aEndereco: TDTOEndereco): Int64;         overload;
+    function Update(aEndereco: TDTOEndereco): Boolean;       overload;
+    function Delete: Boolean;                                overload;
+    function Validar(aEndereco: TDTOEndereco): TReturnBoolean;
     procedure Close;
     Procedure InsertSomenteNoDataSet(aEndereco: TDTOEndereco);
     procedure ProximaPagina(aIdPessoa: Int64);
@@ -208,6 +209,50 @@ begin
     if jsonTextWriter <> nil then
       FreeAndNil(jsonTextWriter);
   end;
+end;
+
+function TControllerEndereco.Validar(aEndereco: TDTOEndereco): TReturnBoolean;
+begin
+  Result.Clear;
+
+  if aEndereco.Cep.Length <> 8 then
+  begin
+    Result.Mensage:= 'O CEP deve conter 8 caracteres';
+    Exit;
+  end;
+
+  if aEndereco.Uf.Length > 50 then
+  begin
+    Result.Mensage:= 'O Estado deve conter no máximo 50 caracteres';
+    Exit;
+  end;
+
+  if aEndereco.Cidade.Length > 50 then
+  begin
+    Result.Mensage:= 'A Cidade deve conter no máximo 100 caracteres';
+    Exit;
+  end;
+
+  if aEndereco.Bairro.Length > 50 then
+  begin
+    Result.Mensage:= 'O Bairro deve conter no máximo 50 caracteres';
+    Exit;
+  end;
+
+  if aEndereco.Logradouro.Length > 50 then
+  begin
+    Result.Mensage:= 'O Logradouro deve conter no máximo 100 caracteres';
+    Exit;
+  end;
+
+  if aEndereco.Complemento.Length > 100 then
+  begin
+    Result.Mensage:= 'O Complemento deve conter no máximo 100 caracteres';
+    Exit;
+  end;
+
+  Result.HasError:= False;
+  Result.Value:=    True;
 end;
 
 function TControllerEndereco.Update(aID: Int64; aLista: TJSonArray): Boolean;

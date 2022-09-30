@@ -4,9 +4,11 @@ interface
 
 uses
   Controller.Pessoas, Controller.Enderecos, DTO.Pessoa, DTO.Endereco,
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Buttons, Vcl.ExtCtrls, Data.DB,
-  Vcl.Grids, Vcl.DBGrids, REST.Types, Vcl.StdCtrls;
+  uReturnCustom,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  Vcl.Buttons, Vcl.ExtCtrls, Data.DB, Vcl.Grids, Vcl.DBGrids, REST.Types,
+  Vcl.StdCtrls;
 
 type
   TfmdPessoas = class(TForm)
@@ -157,13 +159,15 @@ begin
   cbNatureza.Items.Create;
   cbNatureza.Items.Add('Escolha uma');
   cbNatureza.Items.Add('Física');
-  cbNatureza.Items.Add('Juridica');
+  cbNatureza.Items.Add('Jurídica');
 
   fControllerPessoa:=   TControllerPessoa.Create;
   fControllerEndereco:= TControllerEndereco.Create;
 end;
 
 function TfmdPessoas.Salvar: Boolean;
+var
+  bRet: TReturnBoolean;
 begin
   Result:= False;
 
@@ -173,17 +177,18 @@ begin
     Exit;
   end;
 
-  if cbNatureza.ItemIndex = 0 then
-  begin
-    ShowMessage('Selecione uma natureza');
-    cbNatureza.SetFocus;
-    Exit;
-  end;
-
   fRegistro.Natureza:=  cbNatureza.ItemIndex;
   fRegistro.Documento:= edtDocumento.Text;
   fRegistro.Primeiro:=  edtNome.Text;
   fRegistro.Segundo:=   edtSobrenome.Text;
+
+  bRet:= fControllerPessoa.Validar(fRegistro);
+
+  if bRet.HasError then
+  begin
+    ShowMessage(bRet.Mensage);
+    Exit;
+  end;
 
   if fRegistro.Idpessoa < 1 then
   begin
