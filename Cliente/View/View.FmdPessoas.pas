@@ -181,6 +181,7 @@ begin
   fRegistro.Documento:= edtDocumento.Text;
   fRegistro.Primeiro:=  edtNome.Text;
   fRegistro.Segundo:=   edtSobrenome.Text;
+  fRegistro.Registro:=  Date;
 
   bRet:= fControllerPessoa.Validar(fRegistro);
 
