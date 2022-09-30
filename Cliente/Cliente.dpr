@@ -11,7 +11,12 @@ uses
   DAO.ViaCep in 'Model\DAO.ViaCep.pas' {DAOViaCep: TDataModule},
   Controller.Pessoas in 'Controller\Controller.Pessoas.pas',
   Controller.Enderecos in 'Controller\Controller.Enderecos.pas',
-  Controller.ViaCep in 'Controller\Controller.ViaCep.pas';
+  Controller.ViaCep in 'Controller\Controller.ViaCep.pas',
+  DTO.ViaCep in '..\Repositorio\DTOs\DTO.ViaCep.pas',
+  DTO.Endereco in '..\Repositorio\DTOs\DTO.Endereco.pas',
+  DTO.Pessoa in '..\Repositorio\DTOs\DTO.Pessoa.pas',
+  DAO.AtualizaCepEmLote in 'Model\DAO.AtualizaCepEmLote.pas' {DAOAtualizaCepEmLote: TDataModule},
+  Controller.AtualizaCepEmLote in 'Controller\Controller.AtualizaCepEmLote.pas';
 
 {$R *.res}
 
@@ -19,5 +24,6 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TfrmPrincipal, frmPrincipal);
+  Application.CreateForm(TDAOAtualizaCepEmLote, DAOAtualizaCepEmLote);
   Application.Run;
 end.

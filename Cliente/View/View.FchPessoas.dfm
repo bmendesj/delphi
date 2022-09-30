@@ -85,14 +85,13 @@ object fchPessoas: TfchPessoas
       ExplicitLeft = 689
     end
     object btnSalvar: TSpeedButton
-      Left = 520
+      Left = 519
       Top = 5
       Width = 90
       Height = 26
       Anchors = [akTop, akRight]
       Caption = 'Salvar'
       OnClick = btnSalvarClick
-      ExplicitLeft = 594
     end
   end
   object edtEstado: TEdit

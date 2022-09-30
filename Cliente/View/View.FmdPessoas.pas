@@ -3,7 +3,7 @@ unit View.FmdPessoas;
 interface
 
 uses
-  Controller.Pessoas, Controller.Enderecos,
+  Controller.Pessoas, Controller.Enderecos, DTO.Pessoa, DTO.Endereco,
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Buttons, Vcl.ExtCtrls, Data.DB,
   Vcl.Grids, Vcl.DBGrids, REST.Types, Vcl.StdCtrls;

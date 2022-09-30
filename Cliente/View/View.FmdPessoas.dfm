@@ -68,14 +68,13 @@ object fmdPessoas: TfmdPessoas
       ExplicitLeft = 499
     end
     object apagar: TSpeedButton
-      Left = 330
-      Top = 5
+      Left = 329
+      Top = 6
       Width = 90
       Height = 26
       Anchors = [akTop, akRight]
       Caption = 'Apagar'
       OnClick = apagarClick
-      ExplicitLeft = 404
     end
     object btmFechar: TSpeedButton
       Left = 615

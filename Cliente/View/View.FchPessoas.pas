@@ -3,7 +3,7 @@ unit View.FchPessoas;
 interface
 
 uses
-  Controller.Enderecos, Controller.ViaCep,
+  Controller.Enderecos, Controller.ViaCep, DTO.Endereco, DTO.ViaCep,
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Buttons, Vcl.ExtCtrls, Vcl.StdCtrls,
   Vcl.Mask, REST.Types, Data.DB;

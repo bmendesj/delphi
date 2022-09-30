@@ -134,6 +134,15 @@
         <DCCReference Include="Controller\Controller.Pessoas.pas"/>
         <DCCReference Include="Controller\Controller.Enderecos.pas"/>
         <DCCReference Include="Controller\Controller.ViaCep.pas"/>
+        <DCCReference Include="..\Repositorio\DTOs\DTO.ViaCep.pas"/>
+        <DCCReference Include="..\Repositorio\DTOs\DTO.Endereco.pas"/>
+        <DCCReference Include="..\Repositorio\DTOs\DTO.Pessoa.pas"/>
+        <DCCReference Include="Model\DAO.AtualizaCepEmLote.pas">
+            <Form>DAOAtualizaCepEmLote</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TDataModule</DesignClass>
+        </DCCReference>
+        <DCCReference Include="Controller\Controller.AtualizaCepEmLote.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

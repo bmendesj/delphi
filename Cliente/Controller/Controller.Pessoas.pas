@@ -3,30 +3,11 @@ unit Controller.Pessoas;
 interface
 
 uses
-  DAO.Pessoas, Controller.Enderecos,
+  DAO.Pessoas, Controller.Enderecos, DTO.Pessoa, DTO.Endereco,
   System.Classes, System.SysUtils, System.JSON.Writers, System.JSON.Types,
   System.JSON, Data.DB, REST.Types, FireDAC.Comp.Client;
 
 type
-  TDTOPessoa = class
-  strict private
-    fIdpessoa:  Int64;
-    fNatureza:  SmallInt;
-    fDocumento: string;
-    fPrimeiro:  string;
-    fSegundo:   string;
-    fRegistro:  TDate;
-  public
-    constructor Create;
-  published
-    property Idpessoa:  Int64    read fIdpessoa  write fIdpessoa;
-    property Natureza:  SmallInt read fNatureza  write fNatureza;
-    property Documento: string   read fDocumento write fDocumento;
-    property Primeiro:  string   read fPrimeiro  write fPrimeiro;
-    property Segundo:   string   read fSegundo   write fSegundo;
-    property Registro:  TDate    read fRegistro  write fRegistro;
-  end;
-
   TControllerPessoa = class
   private
     fDAO:              TDAOPessoas;
@@ -52,18 +33,6 @@ type
   end;
 
 implementation
-
-{ TDTOPessoa }
-
-constructor TDTOPessoa.Create;
-begin
-  fIdpessoa:=  -1;
-  fNatureza:=  Default(SmallInt);
-  fDocumento:= Default(string);
-  fPrimeiro:=  Default(string);
-  fSegundo:=   Default(string);
-  fRegistro:=  Default(TDate);
-end;
 
 { TControllerPessoa }
 

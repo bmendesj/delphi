@@ -17,7 +17,7 @@ object frmPrincipal: TfrmPrincipal
   object pLateral: TPanel
     Left = 0
     Top = 0
-    Width = 90
+    Width = 161
     Height = 600
     Align = alLeft
     BevelOuter = bvNone
@@ -26,7 +26,7 @@ object frmPrincipal: TfrmPrincipal
     object btmPessoas: TSpeedButton
       Left = 0
       Top = 8
-      Width = 90
+      Width = 160
       Height = 24
       Caption = 'Pessoas'
       OnClick = btmPessoasClick
@@ -34,10 +34,18 @@ object frmPrincipal: TfrmPrincipal
     object btnCarregar: TSpeedButton
       Left = 0
       Top = 38
-      Width = 90
+      Width = 160
       Height = 26
-      Caption = 'Ins. Lote'
+      Caption = 'Ins. Lote Assincrono'
       OnClick = btnCarregarClick
+    end
+    object btnAtualizarEnderecos: TSpeedButton
+      Left = 0
+      Top = 70
+      Width = 160
+      Height = 26
+      Caption = 'Atualizar Endere'#231'os'
+      OnClick = btnAtualizarEnderecosClick
     end
   end
 end
