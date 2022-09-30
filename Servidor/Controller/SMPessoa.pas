@@ -66,7 +66,6 @@ begin
 
       Result:= pessoas.Get(filtro, idPaginacao);
 
-      //Remove partes indesejadas do datasnap
       GetInvocationMetadata().ResponseCode:=    200;
       GetInvocationMetadata().ResponseContent:= Result.ToString;
     except on E: Exception do
@@ -119,7 +118,6 @@ begin
 
       Result:= TJSONArray.Create(TJSONObject.Create(TJSONPair.Create('ultimaId', ultimaId.ToString)));
 
-      //Remove partes indesejadas do datasnap
       GetInvocationMetadata().ResponseCode:=    200;
       GetInvocationMetadata().ResponseContent:= Result.ToString;
     except
@@ -188,7 +186,6 @@ begin
 
       Result:= TJSONArray.Create('message', 'Registro alterado.');
 
-      //Remove partes indesejadas do datasnap
       GetInvocationMetadata().ResponseCode:=    200;
       GetInvocationMetadata().ResponseContent:= Result.ToString;
     except
@@ -237,7 +234,6 @@ begin
 
       Result:= TJSONArray.Create('message', 'Registro apagado.');
 
-      //Remove partes indesejadas do datasnap
       GetInvocationMetadata().ResponseCode:=    200;
       GetInvocationMetadata().ResponseContent:= Result.ToString;
     except

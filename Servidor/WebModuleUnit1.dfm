@@ -13,8 +13,8 @@ object WebModule1: TWebModule1
   object DSRESTWebDispatcher1: TDSRESTWebDispatcher
     DSContext = 'wk/'
     WebDispatch.PathInfo = 'wk*'
-    Left = 96
-    Top = 75
+    Left = 80
+    Top = 3
   end
   object WebFileDispatcher1: TWebFileDispatcher
     WebFileExtensions = <
@@ -54,18 +54,18 @@ object WebModule1: TWebModule1
       end>
     RootDirectory = '.'
     VirtualPath = '/'
-    Left = 56
-    Top = 136
+    Left = 80
+    Top = 48
   end
   object DSProxyGenerator1: TDSProxyGenerator
     ExcludeClasses = 'DSMetadata'
     MetaDataProvider = DSServerMetaDataProvider1
     Writer = 'Java Script REST'
-    Left = 48
-    Top = 248
+    Left = 80
+    Top = 96
   end
   object DSServerMetaDataProvider1: TDSServerMetaDataProvider
-    Left = 208
-    Top = 248
+    Left = 80
+    Top = 144
   end
 end

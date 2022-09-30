@@ -12,13 +12,14 @@ type
     DSSCPessoa: TDSServerClass;
     DSSVEndereco: TDSServerClass;
     DSSCViaCep: TDSServerClass;
-    procedure DSServerClass1GetClass(DSServerClass: TDSServerClass;
-      var PersistentClass: TPersistentClass);
+    DSSAtualizaCepEmLote: TDSServerClass;
     procedure DSSCPessoaGetClass(DSServerClass: TDSServerClass;
       var PersistentClass: TPersistentClass);
     procedure DSSVEnderecoGetClass(DSServerClass: TDSServerClass;
       var PersistentClass: TPersistentClass);
     procedure DSSCViaCepGetClass(DSServerClass: TDSServerClass;
+      var PersistentClass: TPersistentClass);
+    procedure DSSAtualizaCepEmLoteGetClass(DSServerClass: TDSServerClass;
       var PersistentClass: TPersistentClass);
   private
     { Private declarations }
@@ -35,7 +36,7 @@ implementation
 {$R *.dfm}
 
 uses
-  SMEndereco, SMPessoa, SMViaCep;
+  SMEndereco, SMPessoa, SMViaCep, SMAtualizaCepEmLote;
 
 var
   FModule: TComponent;
@@ -58,28 +59,28 @@ begin
   FDSServer := nil;
 end;
 
+procedure TServerContainer1.DSSAtualizaCepEmLoteGetClass(
+  DSServerClass: TDSServerClass; var PersistentClass: TPersistentClass);
+begin
+  PersistentClass:= TSMAtualizaCepEmLote;
+end;
+
 procedure TServerContainer1.DSSCPessoaGetClass(DSServerClass: TDSServerClass;
   var PersistentClass: TPersistentClass);
 begin
-  PersistentClass:= SMPessoa.TSMPessoa;
+  PersistentClass:= TSMPessoa;
 end;
 
 procedure TServerContainer1.DSSCViaCepGetClass(DSServerClass: TDSServerClass;
   var PersistentClass: TPersistentClass);
 begin
-  PersistentClass:= SMViaCep.TSMViaCep;
-end;
-
-procedure TServerContainer1.DSServerClass1GetClass(
-  DSServerClass: TDSServerClass; var PersistentClass: TPersistentClass);
-begin
-//  PersistentClass := ServerMethodsUnit1.testedelphi;
+  PersistentClass:= TSMViaCep;
 end;
 
 procedure TServerContainer1.DSSVEnderecoGetClass(DSServerClass: TDSServerClass;
   var PersistentClass: TPersistentClass);
 begin
-  PersistentClass:= SMEndereco.TSMEndereco;
+  PersistentClass:= TSMEndereco;
 end;
 
 initialization

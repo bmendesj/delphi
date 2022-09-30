@@ -21,7 +21,7 @@ type
     { Private declarations }
   public
     { Public declarations }
-    function ConsultaCep: TJSONArray;
+    function ConsultaCep(aCEP: string): TJSONArray; overload;
   end;
 
 implementation
@@ -34,19 +34,12 @@ uses
 
 { TSMViaCep }
 
-function TSMViaCep.ConsultaCep: TJSONArray;
+function TSMViaCep.ConsultaCep(aCEP: string): TJSONArray;
 var
-  metaData: TDSInvocationMetadata;
-  qCep:  string;
   sTemp: string;
 begin
   try
-    metaData:= GetInvocationMetadata;
-
-    if metaData.QueryParams.IndexOfName('qCep') > -1 then
-      qCep:= metaData.QueryParams.Values['qCep'];
-
-    RESTClient1.BaseURL:= 'https://viacep.com.br/ws/' + qCep + '/json/';
+    RESTClient1.BaseURL:= 'https://viacep.com.br/ws/' + aCEP + '/json/';
     RESTRequest1.Execute;
 
       if not RESTRequest1.Response.Status.Success then
@@ -69,7 +62,6 @@ begin
 
     Result:= TJSONObject.ParseJSONValue(TEncoding.ASCII.GetBytes(sTemp), 0) as TJSONArray;
 
-    //Remove partes indesejadas do datasnap
     GetInvocationMetadata().ResponseCode:=    200;
     GetInvocationMetadata().ResponseContent:= Result.ToString;
   except on E: Exception do

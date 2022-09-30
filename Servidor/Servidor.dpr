@@ -14,7 +14,11 @@ uses
   DAO.Enderecos in 'Model\DAO.Enderecos.pas',
   SMPessoa in 'Controller\SMPessoa.pas' {SMPessoa: TDSServerModule},
   SMEndereco in 'Controller\SMEndereco.pas' {SMEndereco: TDSServerModule},
-  SMViaCep in 'Controller\SMViaCep.pas' {SMViaCep: TDSServerModule};
+  SMViaCep in 'Controller\SMViaCep.pas' {SMViaCep: TDSServerModule},
+  DTO.Endereco in '..\Repositorio\DTOs\DTO.Endereco.pas',
+  DTO.Pessoa in '..\Repositorio\DTOs\DTO.Pessoa.pas',
+  DTO.ViaCep in '..\Repositorio\DTOs\DTO.ViaCep.pas',
+  SMAtualizaCepEmLote in 'Controller\SMAtualizaCepEmLote.pas' {SMAtualizaCepEmLote: TDSServerModule};
 
 {$R *.res}
 

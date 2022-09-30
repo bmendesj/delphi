@@ -22,6 +22,12 @@ object ServerContainer1: TServerContainer1
     OnGetClass = DSSCViaCepGetClass
     Server = DSServer1
     Left = 120
+    Top = 99
+  end
+  object DSSAtualizaCepEmLote: TDSServerClass
+    OnGetClass = DSSAtualizaCepEmLoteGetClass
+    Server = DSServer1
+    Left = 120
     Top = 147
   end
 end
